@@ -11,12 +11,12 @@ class MaternalUltrasoundInitialRuleGroup(CrfRuleGroup):
         predicate=P('number_of_gestations', 'eq', '1'),
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
-        target_models=[f'{app_label}', 'maternalobstericalhistory',
-                       f'{app_label}', 'maternalmedicalhistory',
-                       f'{app_label}', 'maternaldemographics',
-                       f'{app_label}', 'maternallifetimearvhistory',
-                       f'{app_label}', 'maternalarvpreg',
-                       f'{app_label}', 'maternalclinicalmeasurementsone'])
+        target_models=[f'{app_label}.maternalobstericalhistory',
+                       f'{app_label}.maternalmedicalhistory',
+                       f'{app_label}.maternaldemographics',
+                       f'{app_label}.maternallifetimearvhistory',
+                       f'{app_label}.maternalarvpreg',
+                       f'{app_label}.maternalclinicalmeasurementsone'])
 
     class Meta:
         app_label = app_label

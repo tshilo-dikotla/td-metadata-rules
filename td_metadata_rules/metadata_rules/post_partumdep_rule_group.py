@@ -13,4 +13,7 @@ class PostPartumDepressionRuleGroup(CrfRuleGroup):
         predicate=pc.func_show_postpartum_depression,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
-        target_models=[('td_maternal', 'maternalpostpartumdep')])
+        target_models=[(f'{app_label}.maternalpostpartumdep')])
+
+    class Meta:
+        app_label = app_label

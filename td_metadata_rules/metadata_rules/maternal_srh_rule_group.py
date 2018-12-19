@@ -13,4 +13,7 @@ class MaternalSrhServicesRuleGroup(CrfRuleGroup):
         predicate=pc.func_show_srh_services_utilization,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
-        target_models=[('td_maternal', 'maternalsrh')])
+        target_models=[(f'{app_label}.maternalsrh')])
+
+    class Meta:
+        app_label = app_label

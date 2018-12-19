@@ -13,4 +13,7 @@ class RapidTestResultGroup(CrfRuleGroup):
         predicate=pc.func_show_rapid_test_form,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
-        target_models=[('td_maternal', 'rapidtestresult')])
+        target_models=[(f'{app_label}.rapidtestresult')])
+
+    class Meta:
+        app_label = app_label
