@@ -1,0 +1,16 @@
+from edc_metadata import NOT_REQUIRED, REQUIRED
+from edc_metadata_rules import CrfRule, CrfRuleGroup, register
+
+from ..predicates import Predicates
+
+app_label = 'td_maternal'
+pc = Predicates()
+
+
+@register()
+class MaternalSrhServicesRuleGroup(CrfRuleGroup):
+    srh_services = CrfRule(
+        predicate=pc.func_show_srh_services_utilization,
+        consequence=REQUIRED,
+        alternative=NOT_REQUIRED,
+        target_models=[('td_maternal', 'maternalsrh')])

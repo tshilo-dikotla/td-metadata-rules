@@ -41,6 +41,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'edc_appointment.apps.AppConfig',
+    'edc_base.apps.AppConfig',
+    'edc_device.apps.AppConfig',
+    'edc_metadata_rules.apps.AppConfig',
+    'edc_protocol.apps.AppConfig',
+    'edc_reference.apps.AppConfig',
+    'edc_timepoint.apps.AppConfig',
+    'td_reference.apps.AppConfig',
+    'td_visit_schedule.apps.AppConfig',
+    'td_metadata_rules.apps.EdcMetadataAppConfig',
+    'td_metadata_rules.apps.EdcFacilityAppConfig',
     'td_metadata_rules.apps.AppConfig',
 ]
 
@@ -104,6 +115,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+DASHBOARD_URL_NAMES = {
+    'subject_listboard_url': 'td_dashboard:subject_listboard_url',
+    'subject_dashboard_url': 'td_dashboard:subject_dashboard_url',
+}
+
+COUNTRY = 'botswana'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
