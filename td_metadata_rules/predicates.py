@@ -30,15 +30,11 @@ class Predicates(PredicateCollection):
         maternal_status_helper = MaternalStatusHelper()
         return maternal_status_helper.hiv_status == IND
 
-#     def func_require_cd4(self, visit):
-
     def func_mother_pos_vl(self, visit=None, **kwargs):
 
         visit_list = ['2000M', '2010M', '2020M', '2020M', '2060M']
         return self.func_mother_pos(visit) and visit.visit_code in visit_list
 
-#     def func_require_pbmc_vl(self, visit):
-#         return self.func_mother_pos(visit)
     def func_show_postpartum_depression(self, visit=None, **kwargs):
         visit_list = ['2020M', '2060M', '2120M', '2180M', '2240M',
                       '2300M', '2360M']
