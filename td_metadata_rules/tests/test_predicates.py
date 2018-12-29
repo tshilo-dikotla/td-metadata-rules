@@ -56,6 +56,10 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
             report_datetime=report_datetime + relativedelta(days=9),
             timepoint='2020M')
 
+        self.reference_helper.create_visit(
+            report_datetime=report_datetime + relativedelta(days=11),
+            timepoint='2020M')
+
     def test_func_elisa_required(self):
         pc = Predicates()
 
@@ -73,6 +77,23 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
 
         self.assertFalse(
             pc.func_mother_pos_vl(self.maternal_visits[1], POS))
+
+    def test_postpartum_depression_form_required(self):
+        pc = Predicates()
+
+        self.assertTrue(
+            pc.func_show_postpartum_depression(self.maternal_visits[5]))
+
+    def test_postpartum_depression_form_not_required(self):
+        pc = Predicates()
+
+        self.reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[4].report_datetime,
+            reference_name=f'{self.app_label}.maternalpostpartumdep',
+            visit_code=self.maternal_visits[4].visit_code)
+
+        self.assertFalse(
+            pc.func_show_postpartum_depression(self.maternal_visits[5]))
 
     def test_ultrasound_form_required(self):
         pc = Predicates()

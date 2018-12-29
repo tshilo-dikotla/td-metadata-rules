@@ -27,10 +27,10 @@ class Predicates(PredicateCollection):
         return self.func_mother_pos(visit, hiv_status) and visit.visit_code in visit_list
 
     def func_show_postpartum_depression(self, visit=None, **kwargs):
-        visit_list = ['2020M', '2060M', '2120M', '2180M', '2240M',
+        visit_list = ['2010M', '2020M', '2060M', '2120M', '2180M', '2240M',
                       '2300M', '2360M']
         if visit.visit_code in visit_list:
-            return Reference.objects.filter(
+            return not Reference.objects.filter(
                 model=f'{self.app_label}.maternalpostpartumdep',
                 identifier=visit.subject_identifier,
                 report_datetime__lt=visit.report_datetime).exists()
