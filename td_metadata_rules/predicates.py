@@ -1,7 +1,7 @@
 from edc_constants.constants import YES, POS, NEG, IND, UNK
 from edc_metadata_rules import PredicateCollection
 from edc_reference.models import Reference
-from td_maternal.maternal_status_helper import MaternalStatusHelper
+from td_maternal.helper_classes import MaternalStatusHelper
 
 
 class Predicates(PredicateCollection):
@@ -10,13 +10,13 @@ class Predicates(PredicateCollection):
     visit_model = f'{app_label}.maternalvisit'
 
     def func_mother_pos(self, visit=None,
-                        maternal_status_helper=None, **kwargs):
+                        maternal_status_helper=None):
         """Returns true if mother is hiv positive."""
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
         return maternal_status_helper.hiv_status == POS
 
-    def func_mother_pos_vl(self, visit=None, maternal_status_helper=None, ** kwargs):
+    def func_mother_pos_vl(self, visit=None, maternal_status_helper=None):
 
         visit_list = ['2000M', '2010M', '2020M', '2020M', '2060M']
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
@@ -24,20 +24,20 @@ class Predicates(PredicateCollection):
         return self.func_mother_pos(visit, maternal_status_helper) and visit.visit_code in visit_list
 
     def func_mother_neg(self, visit=None,
-                        maternal_status_helper=None, **kwargs):
+                        maternal_status_helper=None):
         """Returns true if mother is hiv neg."""
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
         return maternal_status_helper.hiv_status == NEG
 
     def func_show_elisa_requisition(self, visit=None,
-                                    maternal_status_helper=None, **kwargs):
+                                    maternal_status_helper=None):
         """return True if Mother's Rapid Test Result is Inditerminate"""
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
         return maternal_status_helper.hiv_status == IND
 
-    def func_require_cd4(self, visit=None, maternal_status_helper=None, ** kwargs):
+    def func_require_cd4(self, visit=None, maternal_status_helper=None):
         """Return true if mother is HIV+ and does not have a CD4 in the last 3 months."""
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
@@ -46,7 +46,7 @@ class Predicates(PredicateCollection):
             return maternal_status_helper.eligible_for_cd4
         return False
 
-    def func_show_postpartum_depression(self, visit=None, **kwargs):
+    def func_show_postpartum_depression(self, visit=None):
         visit_list = ['2010M', '2020M', '2060M', '2120M', '2180M', '2240M',
                       '2300M', '2360M']
         if visit.visit_code in visit_list:
@@ -55,7 +55,7 @@ class Predicates(PredicateCollection):
                 identifier=visit.subject_identifier,
                 report_datetime__lt=visit.report_datetime).exists()
 
-    def func_show_ultrasound_form(self, visit=None, **kwargs):
+    def func_show_ultrasound_form(self, visit=None):
         """Return true if ultrasound form has to be filled."""
         if visit.visit_code == '1000M':
             return True
@@ -67,7 +67,7 @@ class Predicates(PredicateCollection):
         return False
 
     def func_show_rapid_test_form(self, visit=None,
-                                  maternal_status_helper=None, **kwargs):
+                                  maternal_status_helper=None):
         subject_identifier = visit.subject_identifier
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
@@ -91,7 +91,7 @@ class Predicates(PredicateCollection):
         else:
             return maternal_status_helper.hiv_status in [UNK, NEG]
 
-    def func_show_srh_services_utilization(self, visit=None, **kwargs):
+    def func_show_srh_services_utilization(self, visit=None):
         """Returns True if participant was referred to srh in the last visit."""
 
         visit_list = ['2010M', '2020M', '2060M', '2120M', '2180M', '2240M',
