@@ -41,15 +41,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django_crypto_fields.apps.AppConfig',
+    'edc_action_item.apps.AppConfig',
     'edc_appointment.apps.AppConfig',
     'edc_base.apps.AppConfig',
     'edc_device.apps.AppConfig',
+    'edc_lab.apps.AppConfig',
     'edc_reference.apps.AppConfig',
     'edc_metadata_rules.apps.AppConfig',
     'edc_protocol.apps.AppConfig',
     'edc_timepoint.apps.AppConfig',
-    'td_reference.apps.AppConfig',
+    'edc_visit_tracking.apps.AppConfig',
     'td_visit_schedule.apps.AppConfig',
+    'td_maternal.apps.AppConfig',
+    'td_reference.apps.AppConfig',
     'td_metadata_rules.apps.EdcMetadataAppConfig',
     'td_metadata_rules.apps.EdcFacilityAppConfig',
     'td_metadata_rules.apps.AppConfig',
@@ -63,6 +68,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'edc_subject_dashboard.middleware.DashboardMiddleware',
+    #     'edc_lab_dashboard.middleware.DashboardMiddleware'
 ]
 
 ROOT_URLCONF = 'td_metadata_rules.urls'
@@ -121,6 +128,8 @@ DASHBOARD_URL_NAMES = {
 }
 
 COUNTRY = 'botswana'
+
+DEFAULT_STUDY_SITE = '40'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
