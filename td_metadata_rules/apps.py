@@ -10,9 +10,15 @@ class AppConfig(DjangoAppConfig):
 
 if settings.APP_NAME == 'td_metadata_rules':
     from edc_metadata.apps import AppConfig as MetadataAppConfig
+    from edc_visit_tracking.apps import (
+        AppConfig as BaseEdcVisitTrackingAppConfig)
 
     class EdcMetadataAppConfig(MetadataAppConfig):
         reason_field = {'td_maternal.maternalvisit': 'reason'}
+
+    class EdcVisitTrackingAppConfig(BaseEdcVisitTrackingAppConfig):
+        visit_models = {
+            'td_maternal': ('maternal_visit', 'td_maternal.maternalvisit')}
 
 
 class EdcFacilityAppConfig(BaseEdcFacilityAppConfig):

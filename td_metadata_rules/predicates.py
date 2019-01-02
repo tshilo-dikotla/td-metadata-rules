@@ -9,25 +9,33 @@ class Predicates(PredicateCollection):
     app_label = 'td_maternal'
     visit_model = f'{app_label}.maternalvisit'
 
-    def func_mother_pos(self, visit=None, **kwargs):
+    def func_mother_pos(self, visit=None,
+                        maternal_status_helper=None, **kwargs):
         """Returns true if mother is hiv positive."""
-        maternal_status_helper = MaternalStatusHelper(visit)
+        maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
+            visit)
         return maternal_status_helper.hiv_status == POS
 
-    def func_mother_neg(self, visit=None, **kwargs):
+    def func_mother_neg(self, visit=None,
+                        maternal_status_helper=None, **kwargs):
         """Returns true if mother is hiv neg."""
-        maternal_status_helper = MaternalStatusHelper(visit)
+        maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
+            visit)
         return maternal_status_helper.hiv_status == NEG
 
-    def func_show_elisa_requisition(self, visit=None, **kwargs):
+    def func_show_elisa_requisition(self, visit=None,
+                                    maternal_status_helper=None, **kwargs):
         """return True if Mother's Rapid Test Result is Inditerminate"""
-        maternal_status_helper = MaternalStatusHelper(visit)
+        maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
+            visit)
         return maternal_status_helper.hiv_status == IND
 
-    def func_mother_pos_vl(self, visit=None, **kwargs):
+    def func_mother_pos_vl(self, visit=None, maternal_status_helper=None, ** kwargs):
 
         visit_list = ['2000M', '2010M', '2020M', '2020M', '2060M']
-        return self.func_mother_pos(visit) and visit.visit_code in visit_list
+        maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
+            visit)
+        return self.func_mother_pos(visit, maternal_status_helper) and visit.visit_code in visit_list
 
     def func_show_postpartum_depression(self, visit=None, **kwargs):
         visit_list = ['2010M', '2020M', '2060M', '2120M', '2180M', '2240M',
@@ -49,9 +57,11 @@ class Predicates(PredicateCollection):
                 timepoint='1000M').exists()
         return False
 
-    def func_show_rapid_test_form(self, visit=None, **kwargs):
+    def func_show_rapid_test_form(self, visit=None,
+                                  maternal_status_helper=None, **kwargs):
         subject_identifier = visit.subject_identifier
-        maternal_status_helper = MaternalStatusHelper(visit)
+        maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
+            visit)
         if visit.visit_code == '2000M' and maternal_status_helper.hiv_status == NEG:
             prev_rapid_test = Reference.objects.filter(
                 model=f'{self.app_label}.rapidtestresult',

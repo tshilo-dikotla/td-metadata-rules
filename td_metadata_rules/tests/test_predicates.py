@@ -3,11 +3,21 @@ from dateutil.relativedelta import relativedelta
 from django.test import TestCase, tag
 from edc_base.tests import SiteTestCaseMixin
 from edc_base.utils import get_utcnow
-from edc_constants.constants import YES, NO
+from edc_constants.constants import YES, NO, NEG, POS, IND
 from edc_reference import LongitudinalRefset
 from edc_reference.tests import ReferenceTestHelper
 
 from ..predicates import Predicates
+
+
+class MaternalStatusHelper:
+
+    def __init__(self, status=None):
+        self.status = status
+
+    @property
+    def hiv_status(self):
+        return self.status
 
 
 @tag('pr')
@@ -62,27 +72,35 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
 
     def test_func_elisa_required(self):
         pc = Predicates()
+        maternal_status_helper = MaternalStatusHelper(status=IND)
 
         self.assertTrue(
-            pc.func_show_elisa_requisition_hiv_status_ind(self.maternal_visits[0]))
+            pc.func_show_elisa_requisition(self.maternal_visits[0],
+                                           maternal_status_helper))
 
     def test_func_elisa_not_required(self):
         pc = Predicates()
+        maternal_status_helper = MaternalStatusHelper(status=NEG)
 
         self.assertFalse(
-            pc.func_show_elisa_requisition_hiv_status_ind(self.maternal_visits[0]))
+            pc.func_show_elisa_requisition(self.maternal_visits[0],
+                                           maternal_status_helper))
 
     def test_func_mother_pos_vl_required(self):
         pc = Predicates()
+        maternal_status_helper = MaternalStatusHelper(status=POS)
 
         self.assertTrue(
-            pc.func_mother_pos_vl(self.maternal_visits[3]))
+            pc.func_mother_pos_vl(self.maternal_visits[3],
+                                  maternal_status_helper))
 
     def test_func_mother_pos_vl_not_required(self):
         pc = Predicates()
+        maternal_status_helper = MaternalStatusHelper(status=NEG)
 
         self.assertFalse(
-            pc.func_mother_pos_vl(self.maternal_visits[1]))
+            pc.func_mother_pos_vl(self.maternal_visits[1],
+                                  maternal_status_helper))
 
     def test_postpartum_depression_form_required(self):
         pc = Predicates()
