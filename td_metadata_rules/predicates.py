@@ -16,6 +16,13 @@ class Predicates(PredicateCollection):
             visit)
         return maternal_status_helper.hiv_status == POS
 
+    def func_mother_pos_vl(self, visit=None, maternal_status_helper=None, ** kwargs):
+
+        visit_list = ['2000M', '2010M', '2020M', '2020M', '2060M']
+        maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
+            visit)
+        return self.func_mother_pos(visit, maternal_status_helper) and visit.visit_code in visit_list
+
     def func_mother_neg(self, visit=None,
                         maternal_status_helper=None, **kwargs):
         """Returns true if mother is hiv neg."""
@@ -30,12 +37,14 @@ class Predicates(PredicateCollection):
             visit)
         return maternal_status_helper.hiv_status == IND
 
-    def func_mother_pos_vl(self, visit=None, maternal_status_helper=None, ** kwargs):
-
-        visit_list = ['2000M', '2010M', '2020M', '2020M', '2060M']
+    def func_require_cd4(self, visit=None, maternal_status_helper=None, ** kwargs):
+        """Return true if mother is HIV+ and does not have a CD4 in the last 3 months."""
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
-        return self.func_mother_pos(visit, maternal_status_helper) and visit.visit_code in visit_list
+        if (maternal_status_helper.hiv_status == POS
+                and visit.visit_code == '1010M'):
+            return maternal_status_helper.eligible_for_cd4
+        return False
 
     def func_show_postpartum_depression(self, visit=None, **kwargs):
         visit_list = ['2010M', '2020M', '2060M', '2120M', '2180M', '2240M',
