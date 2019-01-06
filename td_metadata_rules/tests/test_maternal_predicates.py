@@ -7,7 +7,7 @@ from edc_constants.constants import YES, NO, NEG, POS, IND
 from edc_reference import LongitudinalRefset
 from edc_reference.tests import ReferenceTestHelper
 
-from ..predicates import Predicates
+from ..predicates import MaternalPredicates
 
 
 class MaternalStatusHelper:
@@ -25,7 +25,7 @@ class MaternalStatusHelper:
         return self.cd4
 
 
-class TestPredicates(SiteTestCaseMixin, TestCase):
+class TestMaternalPredicates(SiteTestCaseMixin, TestCase):
 
     reference_helper_cls = ReferenceTestHelper
     visit_model = 'td_maternal.maternalvisit'
@@ -47,8 +47,6 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
             subject_identifier=self.subject_identifier)
 
         report_datetime = get_utcnow()
-#         Arrow.fromdatetime(
-#             datetime(2018, 12, 17)).datetime
         self.reference_helper.create_visit(
             report_datetime=report_datetime, timepoint='1000M')
 
@@ -75,7 +73,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
             timepoint='2020M')
 
     def test_func_mother_pos(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
         maternal_status_helper = MaternalStatusHelper(status=POS)
 
         self.assertTrue(
@@ -83,7 +81,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
                                maternal_status_helper))
 
     def test_func_mother_neg(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
         maternal_status_helper = MaternalStatusHelper(status=NEG)
 
         self.assertTrue(
@@ -91,7 +89,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
                                maternal_status_helper))
 
     def test_func_mother_pos_vl_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
         maternal_status_helper = MaternalStatusHelper(status=POS)
 
         self.assertTrue(
@@ -99,7 +97,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
                                   maternal_status_helper))
 
     def test_func_mother_pos_vl_not_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
         maternal_status_helper = MaternalStatusHelper(status=NEG)
 
         self.assertFalse(
@@ -107,7 +105,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
                                   maternal_status_helper))
 
     def test_func_elisa_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
         maternal_status_helper = MaternalStatusHelper(status=IND)
 
         self.assertTrue(
@@ -115,7 +113,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
                                            maternal_status_helper))
 
     def test_func_elisa_not_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
         maternal_status_helper = MaternalStatusHelper(status=NEG)
 
         self.assertFalse(
@@ -123,7 +121,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
                                            maternal_status_helper))
 
     def test_func_require_cd4_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
         maternal_status_helper = MaternalStatusHelper(status=POS, cd4=True)
 
         self.assertTrue(
@@ -131,7 +129,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
                                 maternal_status_helper))
 
     def test_func_require_cd4_not_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
         maternal_status_helper = MaternalStatusHelper(status=POS)
 
         self.assertFalse(
@@ -139,7 +137,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
                                 maternal_status_helper))
 
     def test_func_require_cd4_not_required_2(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
         maternal_status_helper = MaternalStatusHelper(status=NEG)
 
         self.assertFalse(
@@ -147,7 +145,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
                                 maternal_status_helper))
 
     def test_func_require_cd4_not_required_3(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
         maternal_status_helper = MaternalStatusHelper(status=POS)
 
         self.assertFalse(
@@ -155,13 +153,13 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
                                 maternal_status_helper))
 
     def test_postpartum_depression_form_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
 
         self.assertTrue(
             pc.func_show_postpartum_depression(self.maternal_visits[5]))
 
     def test_postpartum_depression_form_not_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
 
         self.reference_helper.create_for_model(
             report_datetime=self.maternal_visits[4].report_datetime,
@@ -172,13 +170,13 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
             pc.func_show_postpartum_depression(self.maternal_visits[5]))
 
     def test_postpartum_depression_form_not_required_2(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
 
         self.assertFalse(
             pc.func_show_postpartum_depression(self.maternal_visits[0]))
 
     def test_ultrasound_form_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
 
         self.reference_helper.create_for_model(
             report_datetime=self.maternal_visits[0].report_datetime,
@@ -188,7 +186,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
             pc.func_show_ultrasound_form(self.maternal_visits[0]))
 
     def test_ultrasound_form_required_1(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
 
         self.reference_helper.create_for_model(
             report_datetime=self.maternal_visits[1].report_datetime,
@@ -198,7 +196,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
             pc.func_show_ultrasound_form(self.maternal_visits[1]))
 
     def test_ultrasound_form_not_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
 
         self.reference_helper.create_for_model(
             report_datetime=self.maternal_visits[0].report_datetime,
@@ -214,7 +212,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
 
 #     @tag('pr2')
 #     def test_rapid_test_form_required(self):
-#         pc = Predicates()
+#         pc = MaternalPredicates()
 #
 #         self.reference_helper.create_for_model(
 #             report_datetime=self.maternal_visits[2].report_datetime,
@@ -234,7 +232,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
 #
 #     @tag('pr2')
 #     def test_rapid_test_form_not_required(self):
-#         pc = Predicates()
+#         pc = MaternalPredicates()
 #
 #         self.assertTrue(
 #             pc.func_show_rapid_test_form(self.maternal_visits[2], NEG))
@@ -250,7 +248,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
 #
 #     @tag('pr2')
 #     def test_rapid_test_form_not_required_2(self):
-#         pc = Predicates()
+#         pc = MaternalPredicates()
 #
 #         self.assertTrue(
 #             pc.func_show_rapid_test_form(self.maternal_visits[2], NEG))
@@ -265,7 +263,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
 #             pc.func_show_rapid_test_form(self.maternal_visits[2], NEG))
 #
     def test_srh_services_utilization_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
 
         self.reference_helper.create_for_model(
             report_datetime=self.maternal_visits[3].report_datetime,
@@ -279,10 +277,10 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
             visit_code=self.maternal_visits[4].visit_code)
         self.assertTrue(
             pc.func_show_srh_services_utilization(self.maternal_visits[4]))
-        pc = Predicates()
+        pc = MaternalPredicates()
 
     def test_srh_services_utilization_not_required(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
 
         self.reference_helper.create_for_model(
             report_datetime=self.maternal_visits[3].report_datetime,
@@ -298,7 +296,7 @@ class TestPredicates(SiteTestCaseMixin, TestCase):
             pc.func_show_srh_services_utilization(self.maternal_visits[4]))
 
     def test_srh_services_utilization_not_required_2(self):
-        pc = Predicates()
+        pc = MaternalPredicates()
 
         self.reference_helper.create_for_model(
             report_datetime=self.maternal_visits[3].report_datetime,

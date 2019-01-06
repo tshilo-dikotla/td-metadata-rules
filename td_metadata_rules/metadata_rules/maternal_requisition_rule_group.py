@@ -3,11 +3,11 @@ from edc_metadata_rules import RequisitionRule, RequisitionRuleGroup, register
 from td_labs import pbmc_pl_panel, elisa_panel
 from td_labs import viral_load_panel, pbmc_vl_panel
 
-from ..predicates import Predicates
+from ..predicates import MaternalPredicates
 
 
 app_label = 'td_maternal'
-pc = Predicates()
+pc = MaternalPredicates()
 
 
 @register()

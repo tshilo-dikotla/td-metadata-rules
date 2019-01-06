@@ -4,7 +4,7 @@ from edc_reference.models import Reference
 from td_maternal.helper_classes import MaternalStatusHelper
 
 
-class Predicates(PredicateCollection):
+class MaternalPredicates(PredicateCollection):
 
     app_label = 'td_maternal'
     visit_model = f'{app_label}.maternalvisit'
