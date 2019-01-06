@@ -71,16 +71,19 @@ class MaternalPredicates(PredicateCollection):
         subject_identifier = visit.subject_identifier
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
-        if visit.visit_code == '2000M' and maternal_status_helper.hiv_status == NEG:
+        if (visit.visit_code == '2000M'
+                and maternal_status_helper.hiv_status == NEG):
             prev_rapid_test = Reference.objects.filter(
                 model=f'{self.app_label}.rapidtestresult',
                 report_datetime__lt=visit.report_datetime,
-                identifier=subject_identifier).order_by('-report_datetime').last()
+                identifier=subject_identifier).order_by(
+                    '-report_datetime').last()
 
             maternal_ultrasound = Reference.objects.filter(
                 model=f'{self.app_label}.maternalultrasoundinitial',
                 report_datetime__lt=visit.report_datetime,
-                identifier=subject_identifier).order_by('-report_datetime').last()
+                identifier=subject_identifier).order_by(
+                    '-report_datetime').last()
 
             print(maternal_ultrasound.__dict__)
 
@@ -92,7 +95,8 @@ class MaternalPredicates(PredicateCollection):
             return maternal_status_helper.hiv_status in [UNK, NEG]
 
     def func_show_srh_services_utilization(self, visit=None, **kwargs):
-        """Returns True if participant was referred to srh in the last visit."""
+        """Returns True if participant was referred to srh in the
+         last visit."""
 
         visit_list = ['2010M', '2020M', '2060M', '2120M', '2180M', '2240M',
                       '2300M', '2360M']
@@ -100,7 +104,8 @@ class MaternalPredicates(PredicateCollection):
         previous_maternal_contr = Reference.objects.filter(
             model=f'{self.app_label}.maternalcontraception',
             identifier=visit.subject_identifier,
-            report_datetime__lt=visit.report_datetime).order_by('-report_datetime').first()
+            report_datetime__lt=visit.report_datetime).order_by(
+                '-report_datetime').first()
 
         if previous_maternal_contr and visit.visit_code in visit_list:
             values = self.exists(

@@ -55,17 +55,21 @@ class InfantPredicates(PredicateCollection):
                                     maternal_status_helper=None, **kwargs):
 
         visit_list = ['2010', '2020', '2060']
-        return visit.visit_code in visit_list and self.get_latest_maternal_visit_status(
-            visit,
-            maternal_status_helper)
+        return (visit.visit_code in visit_list
+                and self.get_latest_maternal_visit_status(
+                    visit, maternal_status_helper))
 
     def func_require_infant_elisa(self, visit=None,
                                   maternal_status_helper=None, **kwargs):
-        return visit.visit_code == '2180' and self.get_latest_maternal_visit_status(visit, maternal_status_helper)
+        return (visit.visit_code == '2180'
+                and self.get_latest_maternal_visit_status(
+                    visit, maternal_status_helper))
 
     def func_require_infant_dbs(self, visit=None,
                                 maternal_status_helper=None, **kwargs):
-        return visit.visit_code == '2010' and self.get_latest_maternal_visit_status(visit, maternal_status_helper)
+        return (visit.visit_code == '2010'
+                and self.get_latest_maternal_visit_status(
+                    visit, maternal_status_helper))
 
     def func_show_infant_nvp_dispensing(self, visit=None,
                                         maternal_status_helper=None, **kwargs):
@@ -86,4 +90,5 @@ class InfantPredicates(PredicateCollection):
                 report_datetime=visit.report_datetime,
                 field_name='nvp_prophylaxis',
                 timepoint='2000')
-        return self.get_latest_maternal_visit_status(visit, maternal_status_helper) and values[0] == YES
+        return (self.get_latest_maternal_visit_status(
+            visit, maternal_status_helper) and values[0] == YES)
