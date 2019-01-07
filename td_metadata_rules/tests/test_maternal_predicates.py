@@ -224,7 +224,9 @@ class TestMaternalPredicates(SiteTestCaseMixin, TestCase):
 #             report_datetime=self.maternal_visits[1].report_datetime,
 #             reference_name=f'{self.app_label}.maternalultrasoundinitial',
 #             visit_code=self.maternal_visits[1].visit_code,
-#             edd_confirmed=(self.maternal_visits[2].report_datetime + relativedelta(days=50)).date())
+#             edd_confirmed=(
+#                 self.maternal_visits[2].report_datetime + relativedelta(
+#                     days=50)).date())
 #
 #
 #         self.assertTrue(

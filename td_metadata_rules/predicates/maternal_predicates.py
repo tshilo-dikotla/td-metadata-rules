@@ -21,7 +21,8 @@ class MaternalPredicates(PredicateCollection):
         visit_list = ['2000M', '2010M', '2020M', '2020M', '2060M']
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
-        return self.func_mother_pos(visit, maternal_status_helper) and visit.visit_code in visit_list
+        return (self.func_mother_pos(visit, maternal_status_helper)
+                and visit.visit_code in visit_list)
 
     def func_mother_neg(self, visit=None,
                         maternal_status_helper=None, **kwargs):

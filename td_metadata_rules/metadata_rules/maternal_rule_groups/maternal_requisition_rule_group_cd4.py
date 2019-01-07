@@ -2,7 +2,7 @@ from edc_metadata import NOT_REQUIRED, REQUIRED
 from edc_metadata_rules import RequisitionRule, RequisitionRuleGroup, register
 from td_labs import cd4_panel
 
-from ..predicates import MaternalPredicates
+from ...predicates import MaternalPredicates
 
 
 app_label = 'td_maternal'
