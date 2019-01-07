@@ -70,6 +70,9 @@ class MaternalPredicates(PredicateCollection):
     def func_show_rapid_test_form(self, visit=None,
                                   maternal_status_helper=None, **kwargs):
         subject_identifier = visit.subject_identifier
+        result_date = None
+        edd_confirmed = None
+
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
         if (visit.visit_code == '2000M'
@@ -80,16 +83,28 @@ class MaternalPredicates(PredicateCollection):
                 identifier=subject_identifier).order_by(
                     '-report_datetime').last()
 
+            if prev_rapid_test:
+                result_date = self.refsets(
+                    reference_name=f'{self.app_label}.rapidtestresult',
+                    subject_identifier=visit.subject_identifier,
+                    report_datetime=prev_rapid_test.report_datetime).fieldset(
+                    field_name='result_date').all().values
+
             maternal_ultrasound = Reference.objects.filter(
                 model=f'{self.app_label}.maternalultrasoundinitial',
                 report_datetime__lt=visit.report_datetime,
                 identifier=subject_identifier).order_by(
                     '-report_datetime').last()
 
-            print(maternal_ultrasound.__dict__)
+            if maternal_ultrasound:
+                edd_confirmed = self.refsets(
+                    reference_name=f'{self.app_label}.maternalultrasoundinitial',
+                    subject_identifier=visit.subject_identifier,
+                    report_datetime=maternal_ultrasound.report_datetime).fieldset(
+                    field_name='edd_confirmed').all().values
 
-            if prev_rapid_test and maternal_ultrasound:
-                return (maternal_ultrasound.edd_confirmed - prev_rapid_test.result_date).days < 56
+            if edd_confirmed and result_date:
+                return (edd_confirmed[0] - result_date[0]).days > 56
             else:
                 return True
         else:

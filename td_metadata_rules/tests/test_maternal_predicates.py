@@ -1,9 +1,9 @@
 # from arrow.arrow import Arrow
 from dateutil.relativedelta import relativedelta
-from django.test import TestCase
+from django.test import TestCase, tag
 from edc_base.tests import SiteTestCaseMixin
 from edc_base.utils import get_utcnow
-from edc_constants.constants import YES, NO, NEG, POS, IND
+from edc_constants.constants import YES, NO, NEG, POS, IND, UNK
 from edc_reference import LongitudinalRefset
 from edc_reference.tests import ReferenceTestHelper
 
@@ -210,60 +210,106 @@ class TestMaternalPredicates(SiteTestCaseMixin, TestCase):
         self.assertFalse(
             pc.func_show_ultrasound_form(self.maternal_visits[1]))
 
-#     @tag('pr2')
-#     def test_rapid_test_form_required(self):
-#         pc = MaternalPredicates()
-#
-#         self.reference_helper.create_for_model(
-#             report_datetime=self.maternal_visits[2].report_datetime,
-#             reference_name=f'{self.app_label}.rapidtestresult',
-#             visit_code=self.maternal_visits[2].visit_code,
-#             result_date=self.maternal_visits[2].report_datetime.date())
-#
-#         self.reference_helper.create_for_model(
-#             report_datetime=self.maternal_visits[1].report_datetime,
-#             reference_name=f'{self.app_label}.maternalultrasoundinitial',
-#             visit_code=self.maternal_visits[1].visit_code,
-#             edd_confirmed=(
-#                 self.maternal_visits[2].report_datetime + relativedelta(
-#                     days=50)).date())
-#
-#
-#         self.assertTrue(
-#             pc.func_show_rapid_test_form(self.maternal_visits[3], NEG))
-#
-#     @tag('pr2')
-#     def test_rapid_test_form_not_required(self):
-#         pc = MaternalPredicates()
-#
-#         self.assertTrue(
-#             pc.func_show_rapid_test_form(self.maternal_visits[2], NEG))
-#
-#         self.reference_helper.create_for_model(
-#             report_datetime=self.maternal_visits[2].report_datetime,
-#             reference_name=f'{self.app_label}.rapidtestresult',
-#             visit_code=self.maternal_visits[2].visit_code,
-#             result_date=self.maternal_visits[2].report_datetime.date())
-#
-#         self.assertTrue(
-#             pc.func_show_rapid_test_form(self.maternal_visits[2], NEG))
-#
-#     @tag('pr2')
-#     def test_rapid_test_form_not_required_2(self):
-#         pc = MaternalPredicates()
-#
-#         self.assertTrue(
-#             pc.func_show_rapid_test_form(self.maternal_visits[2], NEG))
-#
-#         self.reference_helper.create_for_model(
-#             report_datetime=self.maternal_visits[2].report_datetime,
-#             reference_name=f'{self.app_label}.rapidtestresult',
-#             visit_code=self.maternal_visits[2].visit_code,
-#             result_date=self.maternal_visits[2].report_datetime.date())
-#
-#         self.assertTrue(
-#             pc.func_show_rapid_test_form(self.maternal_visits[2], NEG))
-#
+    def test_rapid_test_form_required(self):
+        pc = MaternalPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=NEG)
+
+        self.reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[2].report_datetime,
+            reference_name=f'{self.app_label}.rapidtestresult',
+            visit_code=self.maternal_visits[2].visit_code,
+            result_date=self.maternal_visits[2].report_datetime.date())
+
+        self.reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[1].report_datetime,
+            reference_name=f'{self.app_label}.maternalultrasoundinitial',
+            visit_code=self.maternal_visits[1].visit_code,
+            edd_confirmed=(
+                self.maternal_visits[2].report_datetime + relativedelta(
+                    days=57)).date())
+
+        self.assertTrue(
+            pc.func_show_rapid_test_form(self.maternal_visits[3],
+                                         maternal_status_helper))
+
+    def test_rapid_test_form_required_2(self):
+        pc = MaternalPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=UNK)
+
+        self.assertTrue(
+            pc.func_show_rapid_test_form(self.maternal_visits[1],
+                                         maternal_status_helper))
+
+    def test_rapid_test_form_required_3(self):
+        pc = MaternalPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=NEG)
+
+        self.assertTrue(
+            pc.func_show_rapid_test_form(self.maternal_visits[2],
+                                         maternal_status_helper))
+
+        self.reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[1].report_datetime,
+            reference_name=f'{self.app_label}.maternalultrasoundinitial',
+            visit_code=self.maternal_visits[1].visit_code,
+            edd_confirmed=(
+                self.maternal_visits[2].report_datetime + relativedelta(
+                    days=57)).date())
+
+        self.assertTrue(
+            pc.func_show_rapid_test_form(self.maternal_visits[3],
+                                         maternal_status_helper))
+
+    def test_rapid_test_form_not_required_2(self):
+        pc = MaternalPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=POS)
+
+        self.assertFalse(
+            pc.func_show_rapid_test_form(self.maternal_visits[3],
+                                         maternal_status_helper))
+
+        maternal_status_helper = MaternalStatusHelper(status=POS)
+
+        self.reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[2].report_datetime,
+            reference_name=f'{self.app_label}.rapidtestresult',
+            visit_code=self.maternal_visits[2].visit_code,
+            result_date=self.maternal_visits[2].report_datetime.date())
+
+        self.reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[1].report_datetime,
+            reference_name=f'{self.app_label}.maternalultrasoundinitial',
+            visit_code=self.maternal_visits[1].visit_code,
+            edd_confirmed=(
+                self.maternal_visits[2].report_datetime + relativedelta(
+                    days=57)).date())
+
+        self.assertFalse(
+            pc.func_show_rapid_test_form(self.maternal_visits[3],
+                                         maternal_status_helper))
+
+    def test_rapid_test_form_not_required_3(self):
+        pc = MaternalPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=NEG)
+
+        self.reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[2].report_datetime,
+            reference_name=f'{self.app_label}.rapidtestresult',
+            visit_code=self.maternal_visits[2].visit_code,
+            result_date=self.maternal_visits[2].report_datetime.date())
+
+        self.reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[1].report_datetime,
+            reference_name=f'{self.app_label}.maternalultrasoundinitial',
+            visit_code=self.maternal_visits[1].visit_code,
+            edd_confirmed=(
+                self.maternal_visits[2].report_datetime + relativedelta(
+                    days=50)).date())
+
+        self.assertFalse(
+            pc.func_show_rapid_test_form(self.maternal_visits[3],
+                                         maternal_status_helper))
+
     def test_srh_services_utilization_required(self):
         pc = MaternalPredicates()
 

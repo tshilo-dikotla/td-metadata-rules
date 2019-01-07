@@ -2,18 +2,18 @@ from edc_metadata import NOT_REQUIRED, REQUIRED
 from edc_metadata_rules import RequisitionRule, RequisitionRuleGroup, register
 from td_labs import dbs_panel, dna_pcr, elisa_panel
 
-from ...predicates import MaternalPredicates
+from ...predicates import InfantPredicates
 
 
 app_label = 'td_infant'
-pc = MaternalPredicates()
+pc = InfantPredicates()
 
 
 @register()
 class InfantRequisitionRuleGroup(RequisitionRuleGroup):
 
     require_dna_pcr = RequisitionRule(
-        predicate=pc.func_infant_heu_and_require_pcr,
+        predicate=pc.func_infant_heu_require_pcr,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
         target_panels=[dna_pcr])
