@@ -2,6 +2,7 @@ from django.apps import apps as django_apps
 from edc_constants.constants import YES
 from edc_metadata_rules import PredicateCollection
 from edc_reference.models import Reference
+from td_maternal.helper_classes import MaternalStatusHelper
 
 from .maternal_predicates import MaternalPredicates
 
@@ -21,6 +22,8 @@ class InfantPredicates(PredicateCollection):
             pass
         else:
             mpc = MaternalPredicates()
+            maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
+                maternal_visit)
             status = mpc.func_mother_pos(
                 maternal_visit, maternal_status_helper)
         return status
