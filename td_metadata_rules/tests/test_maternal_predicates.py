@@ -1,4 +1,3 @@
-# from arrow.arrow import Arrow
 from dateutil.relativedelta import relativedelta
 from django.test import TestCase, tag
 from edc_base.tests import SiteTestCaseMixin

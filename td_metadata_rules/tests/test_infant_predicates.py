@@ -1,7 +1,8 @@
-from django.test import TestCase
+from dateutil.relativedelta import relativedelta
+from django.test import TestCase, tag
 from edc_base.tests import SiteTestCaseMixin
 from edc_base.utils import get_utcnow
-from edc_constants.constants import YES, NEG, POS
+from edc_constants.constants import YES, NO, NEG, POS
 from edc_reference import LongitudinalRefset
 from edc_reference.tests import ReferenceTestHelper
 
@@ -44,31 +45,36 @@ class TestInfantPredicates(SiteTestCaseMixin, TestCase):
         self.maternal_subject_identifier = '111111111'
         report_datetime = get_utcnow()
 
-        self.reference_helper = self.reference_helper_cls(
+        self.maternal_reference_helper = self.reference_helper_cls(
             visit_model=self.maternal_visit_model,
             subject_identifier=self.maternal_subject_identifier)
 
-        self.reference_helper.create_visit(
-            report_datetime=report_datetime, timepoint='2000M')
-
-        self.reference_helper = self.reference_helper_cls(
+        self.infant_reference_helper = self.reference_helper_cls(
             visit_model=self.visit_model,
             subject_identifier=self.subject_identifier)
 
-        self.reference_helper.create_visit(
-            report_datetime=report_datetime, timepoint='2000')
+        self.maternal_reference_helper.create_visit(
+            report_datetime=report_datetime, timepoint='2000M')
 
-        self.reference_helper.create_visit(
-            report_datetime=report_datetime, timepoint='2010')
+        self.infant_reference_helper.create_visit(
+            report_datetime=report_datetime + relativedelta(days=1),
+            timepoint='2000')
 
-        self.reference_helper.create_visit(
-            report_datetime=report_datetime, timepoint='2020')
+        self.infant_reference_helper.create_visit(
+            report_datetime=report_datetime + relativedelta(days=2),
+            timepoint='2010')
 
-        self.reference_helper.create_visit(
-            report_datetime=report_datetime, timepoint='2060')
+        self.infant_reference_helper.create_visit(
+            report_datetime=report_datetime + relativedelta(days=3),
+            timepoint='2020')
 
-        self.reference_helper.create_visit(
-            report_datetime=report_datetime, timepoint='2180')
+        self.infant_reference_helper.create_visit(
+            report_datetime=report_datetime + relativedelta(days=5),
+            timepoint='2060')
+
+        self.infant_reference_helper.create_visit(
+            report_datetime=report_datetime + relativedelta(days=7),
+            timepoint='2180')
 
     def test_func_show_infant_arv_proph_required(self):
         pc = InfantPredicates()
@@ -78,17 +84,17 @@ class TestInfantPredicates(SiteTestCaseMixin, TestCase):
             pc.func_show_infant_arv_proph(self.infant_visits[1],
                                           maternal_status_helper))
 
-
+#     @tag('if3')
 #     def test_func_show_infant_arv_proph_required_2(self):
 #         pc = InfantPredicates()
 #         maternal_status_helper = MaternalStatusHelper(status=POS)
 #
-#         self.reference_helper.create_for_model(
+#         self.infant_reference_helper.create_for_model(
 #             report_datetime=self.infant_visits[1].report_datetime,
 #             reference_name=f'{self.app_label}.infantarvproph',
 #             visit_code=self.infant_visits[1].visit_code)
 #
-#         self.reference_helper.create_for_model(
+#         self.infant_reference_helper.create_for_model(
 #             report_datetime=self.infant_visits[1].report_datetime,
 #             reference_name=f'{self.app_label}.infantarvprophmod',
 #             visit_code=self.infant_visits[1].visit_code,
@@ -195,14 +201,53 @@ class TestInfantPredicates(SiteTestCaseMixin, TestCase):
                                        maternal_status_helper))
 
     def test_func_show_infant_nvp_dispensing_required(self):
-        pass
+        pc = InfantPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=POS)
+
+        self.maternal_reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[0].report_datetime,
+            reference_name='td_maternal.maternalrando',
+            visit_code='2000M',
+            rx='NVP\n')
+
+        self.assertTrue(
+            pc.func_show_infant_nvp_dispensing(self.infant_visits[2],
+                                               maternal_status_helper))
+
+    def test_func_show_infant_nvp_dispensing_not_required(self):
+        pc = InfantPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=POS)
+
+        self.maternal_reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[0].report_datetime,
+            reference_name='td_maternal.maternalrando',
+            visit_code='2000M',
+            rx='blahblah\n')
+
+        self.assertFalse(
+            pc.func_show_infant_nvp_dispensing(self.infant_visits[2],
+                                               maternal_status_helper))
+
+    def test_func_show_infant_nvp_dispensing_not_required_2(self):
+        pc = InfantPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=NEG)
+
+        self.maternal_reference_helper.create_for_model(
+            report_datetime=self.maternal_visits[0].report_datetime,
+            reference_name='td_maternal.maternalrando',
+            visit_code='2000M',
+            rx='NVP\n')
+
+        self.assertFalse(
+            pc.func_show_infant_nvp_dispensing(self.infant_visits[2],
+                                               maternal_status_helper))
 
     def test_func_show_nvp_adjustment_2010_required(self):
         pc = InfantPredicates()
         maternal_status_helper = MaternalStatusHelper(status=POS)
 
-        self.reference_helper.create_for_model(
-            report_datetime=self.infant_visits[1].report_datetime,
+        self.infant_reference_helper.create_for_model(
+            report_datetime=self.infant_visits[0].report_datetime,
             reference_name=f'{self.app_label}.infantnvpdispensing',
             visit_code=self.infant_visits[0].visit_code,
             nvp_prophylaxis=YES)
@@ -211,11 +256,62 @@ class TestInfantPredicates(SiteTestCaseMixin, TestCase):
             pc.func_show_nvp_adjustment_2010(self.infant_visits[1],
                                              maternal_status_helper))
 
+    def test_func_show_nvp_adjustment_2010_not_required(self):
+        pc = InfantPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=POS)
+
+        self.infant_reference_helper.create_for_model(
+            report_datetime=self.infant_visits[0].report_datetime,
+            reference_name=f'{self.app_label}.infantnvpdispensing',
+            visit_code=self.infant_visits[0].visit_code,
+            nvp_prophylaxis=NO)
+
+        self.assertFalse(
+            pc.func_show_nvp_adjustment_2010(self.infant_visits[1],
+                                             maternal_status_helper))
+
+    def test_func_show_nvp_adjustment_2010_not_required_2(self):
+        pc = InfantPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=NEG)
+
+        self.infant_reference_helper.create_for_model(
+            report_datetime=self.infant_visits[0].report_datetime,
+            reference_name=f'{self.app_label}.infantnvpdispensing',
+            visit_code=self.infant_visits[0].visit_code,
+            nvp_prophylaxis=YES)
+
+        self.assertFalse(
+            pc.func_show_nvp_adjustment_2010(self.infant_visits[1],
+                                             maternal_status_helper))
+
+    def test_func_show_nvp_adjustment_2010_not_required_3(self):
+        pc = InfantPredicates()
+        maternal_status_helper = MaternalStatusHelper(status=POS)
+
+        self.infant_reference_helper.create_for_model(
+            report_datetime=self.infant_visits[0].report_datetime,
+            reference_name=f'{self.app_label}.infantnvpdispensing',
+            visit_code=self.infant_visits[0].visit_code,
+            nvp_prophylaxis=YES)
+
+        self.assertFalse(
+            pc.func_show_nvp_adjustment_2010(self.infant_visits[2],
+                                             maternal_status_helper))
+
     @property
     def infant_visits(self):
         return LongitudinalRefset(
             subject_identifier=self.subject_identifier,
             visit_model=self.visit_model,
             name=self.visit_model,
+            reference_model_cls=self.reference_model
+        ).order_by('report_datetime')
+
+    @property
+    def maternal_visits(self):
+        return LongitudinalRefset(
+            subject_identifier=self.maternal_subject_identifier,
+            visit_model=self.maternal_visit_model,
+            name=self.maternal_visit_model,
             reference_model_cls=self.reference_model
         ).order_by('report_datetime')

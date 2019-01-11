@@ -20,11 +20,10 @@ if settings.APP_NAME == 'td_metadata_rules':
         visit_models = {
             'td_maternal': ('maternal_visit', 'td_maternal.maternalvisit')}
 
-
-class EdcFacilityAppConfig(BaseEdcFacilityAppConfig):
-    country = 'botswana'
-    definitions = {
-        '7-day clinic': dict(days=[MO, TU, WE, TH, FR, SA, SU],
-                             slots=[100, 100, 100, 100, 100, 100, 100]),
-        '5-day clinic': dict(days=[MO, TU, WE, TH, FR],
-                             slots=[100, 100, 100, 100, 100])}
+    class EdcFacilityAppConfig(BaseEdcFacilityAppConfig):
+        country = 'botswana'
+        definitions = {
+            '7-day clinic': dict(days=[MO, TU, WE, TH, FR, SA, SU],
+                                 slots=[100, 100, 100, 100, 100, 100, 100]),
+            '5-day clinic': dict(days=[MO, TU, WE, TH, FR],
+                                 slots=[100, 100, 100, 100, 100])}
