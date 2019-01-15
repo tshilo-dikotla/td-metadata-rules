@@ -10,7 +10,7 @@ pc = MaternalPredicates()
 @register()
 class MaternalAntenatalEnrollmentRuleGroup(CrfRuleGroup):
 
-    maternal_ultrasound = CrfRule(
+    maternal_ultrasound_neg = CrfRule(
         predicate=P('number_of_gestations', 'eq', '1'),
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
@@ -19,7 +19,7 @@ class MaternalAntenatalEnrollmentRuleGroup(CrfRuleGroup):
                        f'{app_label}.maternaldemographics',
                        f'{app_label}.maternalclinicalmeasurementsone'])
 
-    maternal_ultrasound = CrfRule(
+    maternal_ultrasound_pos = CrfRule(
         predicate=pc.func_mother_pos_initial,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
