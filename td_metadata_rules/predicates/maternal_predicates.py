@@ -31,6 +31,13 @@ class MaternalPredicates(PredicateCollection):
             visit)
         return maternal_status_helper.hiv_status == NEG
 
+    def func_mother_pos_initial(self, visit=None,
+                                maternal_status_helper=None, **kwargs):
+
+        maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
+            visit)
+        return visit.visit_code == '1000M' and maternal_status_helper.hiv_status == POS
+
     def func_show_elisa_requisition(self, visit=None,
                                     maternal_status_helper=None, **kwargs):
         """return True if Mother's Rapid Test Result is Inditerminate"""
