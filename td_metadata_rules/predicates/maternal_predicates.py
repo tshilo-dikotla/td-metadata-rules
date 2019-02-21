@@ -9,6 +9,13 @@ class MaternalPredicates(PredicateCollection):
     app_label = 'td_maternal'
     visit_model = f'{app_label}.maternalvisit'
 
+    def func_mother_pos_initial(self, visit=None,
+                                maternal_status_helper=None, **kwargs):
+
+        maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
+            visit)
+        return visit.visit_code == '1000M' and maternal_status_helper.hiv_status == POS
+
     def func_mother_pos(self, visit=None,
                         maternal_status_helper=None, **kwargs):
         """Returns true if mother is hiv positive."""
@@ -30,13 +37,6 @@ class MaternalPredicates(PredicateCollection):
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
         return maternal_status_helper.hiv_status == NEG
-
-    def func_mother_pos_initial(self, visit=None,
-                                maternal_status_helper=None, **kwargs):
-
-        maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
-            visit)
-        return visit.visit_code == '1000M' and maternal_status_helper.hiv_status == POS
 
     def func_show_elisa_requisition(self, visit=None,
                                     maternal_status_helper=None, **kwargs):
