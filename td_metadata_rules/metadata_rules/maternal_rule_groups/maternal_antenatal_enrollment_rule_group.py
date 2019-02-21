@@ -19,13 +19,6 @@ class MaternalAntenatalEnrollmentRuleGroup(CrfRuleGroup):
                        f'{app_label}.maternaldemographics',
                        f'{app_label}.maternalclinicalmeasurementsone'])
 
-    maternal_ultrasound_pos = CrfRule(
-        predicate=pc.func_mother_pos_initial,
-        consequence=REQUIRED,
-        alternative=NOT_REQUIRED,
-        target_models=[f'{app_label}.maternallifetimearvhistory',
-                       f'{app_label}.maternalarvpreg'])
-
     class Meta:
         app_label = app_label
         source_model = f'{app_label}.maternalultrasoundinitial'
