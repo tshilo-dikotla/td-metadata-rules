@@ -74,8 +74,8 @@ class MaternalPredicates(PredicateCollection):
                 timepoint='1000M').exists()
         return False
 
-    def func_show_rapid_test_form(self, visit=None,
-                                  maternal_status_helper=None, **kwargs):
+    def func_show_rapid_test_form(
+            self, visit=None, maternal_status_helper=None, **kwargs):
         subject_identifier = visit.subject_identifier
         result_date = None
         edd_confirmed = None
@@ -115,7 +115,7 @@ class MaternalPredicates(PredicateCollection):
             else:
                 return True
         else:
-            return maternal_status_helper.hiv_status in [UNK, NEG]
+            return maternal_status_helper.hiv_status == UNK
 
     def func_show_srh_services_utilization(self, visit=None, **kwargs):
         """Returns True if participant was referred to srh in the
