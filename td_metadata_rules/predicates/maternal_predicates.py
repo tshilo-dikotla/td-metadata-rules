@@ -14,7 +14,16 @@ class MaternalPredicates(PredicateCollection):
         """Returns true if mother is hiv positive."""
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
-        return maternal_status_helper.hiv_status == POS
+
+        values = self.exists(
+            reference_name=f'{self.app_label}.maternalultrasoundinitial',
+            subject_identifier=visit.subject_identifier,
+            field_name='number_of_gestations')
+
+        if values[0]:
+            return values[0] == '1' and maternal_status_helper.hiv_status == POS
+        else:
+            return maternal_status_helper.hiv_status == POS
 
     def func_mother_pos_vl(self, visit=None, maternal_status_helper=None, ** kwargs):
 

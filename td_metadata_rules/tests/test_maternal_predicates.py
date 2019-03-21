@@ -24,6 +24,7 @@ class MaternalStatusHelper:
         return self.cd4
 
 
+@tag('mrg')
 class TestMaternalPredicates(SiteTestCaseMixin, TestCase):
 
     reference_helper_cls = ReferenceTestHelper
@@ -102,14 +103,6 @@ class TestMaternalPredicates(SiteTestCaseMixin, TestCase):
         self.assertFalse(
             pc.func_mother_pos_vl(self.maternal_visits[1],
                                   maternal_status_helper))
-
-    def test_func_mother_pos_initial(self):
-        pc = MaternalPredicates()
-        maternal_status_helper = MaternalStatusHelper(status=POS)
-
-        self.assertTrue(
-            pc.func_mother_pos_initial(self.maternal_visits[0],
-                                       maternal_status_helper))
 
     def test_func_elisa_required(self):
         pc = MaternalPredicates()

@@ -30,3 +30,4 @@ git+https://github.com/botswana-harvard/edc-visit-schedule.git@develop#egg=edc_v
 git+https://github.com/botswana-harvard/edc-visit-tracking.git@develop#egg=edc_visit_tracking
 git+https://github.com/botswana-harvard/django-crypto-fields.git@develop#egg=django_crypto_fields
 git+https://github.com/botswana-harvard/django-revision.git@develop#egg=django_revision
+git+https://github.com/tshilo-dikotla/td-rando.git@develop#egg=td_rando
