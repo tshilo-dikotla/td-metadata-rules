@@ -1,5 +1,5 @@
 from dateutil.relativedelta import relativedelta
-from django.test import TestCase, tag
+from django.test import TestCase
 from edc_base.tests import SiteTestCaseMixin
 from edc_base.utils import get_utcnow
 from edc_constants.constants import YES, NO, NEG, POS, IND, UNK
@@ -24,7 +24,6 @@ class MaternalStatusHelper:
         return self.cd4
 
 
-@tag('mrg')
 class TestMaternalPredicates(SiteTestCaseMixin, TestCase):
 
     reference_helper_cls = ReferenceTestHelper
@@ -242,7 +241,7 @@ class TestMaternalPredicates(SiteTestCaseMixin, TestCase):
 
     def test_rapid_test_form_required_3(self):
         pc = MaternalPredicates()
-        maternal_status_helper = MaternalStatusHelper(status=NEG)
+        maternal_status_helper = MaternalStatusHelper(status=UNK)
 
         self.assertTrue(
             pc.func_show_rapid_test_form(self.maternal_visits[2],
