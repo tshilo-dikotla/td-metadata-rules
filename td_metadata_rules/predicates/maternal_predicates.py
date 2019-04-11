@@ -123,7 +123,7 @@ class MaternalPredicates(PredicateCollection):
         """Returns True if participant was referred to srh in the
          last visit."""
 
-        visit_list = ['2010M', '2020M', '2060M', '2120M', '2180M', '2240M',
+        visit_list = ['2010M', '2020M', '2060M', '2120M', '2180M',
                       '2300M', '2360M']
 
         previous_maternal_contr = Reference.objects.filter(
