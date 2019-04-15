@@ -1,4 +1,5 @@
 from django.apps import apps as django_apps
+from django.core.exceptions import ValidationError
 from edc_constants.constants import YES
 from edc_metadata_rules import PredicateCollection
 from edc_reference import LongitudinalRefset, site_reference_configs
@@ -13,6 +14,26 @@ class InfantPredicates(PredicateCollection):
 
     app_label = 'td_infant'
     visit_model = f'{app_label}.infantvisit'
+    karabo_tb_model = f'{app_label}.karabotuberculosishistory'
+    karabo_consent_model = f'{app_label}.karabosubjectconsent'
+    karabo_screening_model = f'{app_label}.karabosubjectscreening'
+    registered_subject_model = 'edc_registration.registeredsubject'
+
+    @property
+    def registered_subject_model_cls(self):
+        return django_apps.get_model(self.registered_subject_model)
+
+    @property
+    def karabo_tb_model_cls(self):
+        return django_apps.get_model(self.karabo_tb_model)
+
+    @property
+    def karabo_consent_model_cls(self):
+        return django_apps.get_model(self.karabo_consent_model)
+
+    @property
+    def karabo_screening_model_cls(self):
+        return django_apps.get_model(self.karabo_screening_model)
 
     def get_latest_maternal_visit_status(self, visit=None, maternal_status_helper=None):
         status = False
@@ -28,7 +49,7 @@ class InfantPredicates(PredicateCollection):
                 maternal_visit, maternal_status_helper)
         return status
 
-    def func_show_infant_arv_proph(self, visit=None, maternal_status_helper=None):
+    def func_show_infant_arv_proph(self, visit=None, maternal_status_helper=None, **kwargs):
         visit_list = ['2010', '2020', '2060', '2090',
                       '2120', '2180', '2240', '2300', '2360']
         # check visit code
@@ -43,12 +64,12 @@ class InfantPredicates(PredicateCollection):
                                                              maternal_status_helper)
             elif infant_arv_proph_required:
                 infant_arv_proph_cls = django_apps.get_model(
-                    'td_maternal.infantarvproph')
+                    'td_infant.infantarvproph')
                 try:
                     infant_arv_proph_model = infant_arv_proph_cls.objects.get(
                         subject_identifier=visit.subject_identifier,
                         report_datetime=infant_arv_proph_required.report_datetime)
-                except:
+                except infant_arv_proph_cls.DoesNotExist:
                     return False
                 else:
                     arv_proph_list = infant_arv_proph_model.infantarvprophmod_set.all()
@@ -118,12 +139,56 @@ class InfantPredicates(PredicateCollection):
                 report_datetime__lt=visit.report_datetime).order_by(
                 '-report_datetime').first()
 
-            value = self.exists(
-                reference_name=f'{self.app_label}.infantnvpdispensing',
-                subject_identifier=visit.subject_identifier,
-                report_datetime=previous_nvp_dispensing.report_datetime,
-                field_name='nvp_prophylaxis',
-                timepoint='2000')
-            return (self.get_latest_maternal_visit_status(
-                visit, maternal_status_helper) and value[0] == YES)
+            if previous_nvp_dispensing:
+                value = self.exists(
+                    reference_name=f'{self.app_label}.infantnvpdispensing',
+                    subject_identifier=visit.subject_identifier,
+                    report_datetime=previous_nvp_dispensing.report_datetime,
+                    field_name='nvp_prophylaxis',
+                    timepoint='2000')
+                return (self.get_latest_maternal_visit_status(
+                    visit, maternal_status_helper) and value[0] == YES)
         return False
+
+    def show_karabo_offstudy(self, visit, **kwargs):
+        if visit.visit_code == '2180':
+            return True
+        value = self.exists(
+            reference_name=f'{self.app_label}.karabotuberculosishistory',
+            subject_identifier=visit.subject_identifier,
+            field_name='put_offstudy',
+            timepoint=visit.visit_code)
+        return visit.appointment.timepoint < 180 and value[0] == YES
+
+    def func_show_karabo_tb_history(self, visit, **kwargs):
+        relative_identifier = None
+        if not self.show_karabo_offstudy(visit=visit):
+            try:
+                relative_identifier = self.registered_subject_model_cls.objects.get(
+                    subject_identifier=visit.appointment.subject_identifier).relative_identifier
+            except self.registered_subject_model_cls.DoesNotExist:
+                raise ValidationError(
+                    f'Registered subject for {visit.appointment.subject_identifier} '
+                    'not found.')
+            else:
+                return self.check_for_karabo_consent(
+                    relative_identifier=relative_identifier)
+
+    def check_for_karabo_consent(self, relative_identifier=None):
+
+        try:
+            karabo_screening = self.karabo_screening_model_cls.objects.get(
+                subject_identifier=relative_identifier)
+        except self.karabo_screening_model_cls.DoesNotExist:
+            return False
+        else:
+            if karabo_screening.is_eligible:
+                try:
+                    self.karabo_consent_model_cls.objects.get(
+                        subject_identifier=relative_identifier)
+                    return True
+                except self.karabo_consent_model_cls.DoesNotExist:
+                    raise ValidationError(
+                        'Participant is eligible for Karabo sub-study, please complete '
+                        'Karabo subject consent.')
+            return False

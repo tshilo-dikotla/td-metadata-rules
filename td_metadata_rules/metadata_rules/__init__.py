@@ -1,3 +1,4 @@
+from .infant_rule_groups import KaraboTbRuleGroup
 from .maternal_rule_groups import HivPosRuleGroup
 from .maternal_rule_groups import MaternalRequisitionRuleGroup
 from .maternal_rule_groups import MaternalRequisitionRuleGroupCD4

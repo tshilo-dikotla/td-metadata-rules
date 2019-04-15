@@ -1,5 +1,7 @@
+git+https://github.com/tshilo-dikotla/td-maternal.git@develop#egg=td_maternal
 git+https://github.com/tshilo-dikotla/td-maternal-validators.git@develop#egg=td_maternal_validators
 git+https://github.com/tshilo-dikotla/td-labs.git@develop#egg=td_labs
+git+https://github.com/tshilo-dikotla/td-rando.git@develop#egg=td_rando
 git+https://github.com/tshilo-dikotla/td-reference.git@develop#egg=td_reference
 git+https://github.com/tshilo-dikotla/td-visit-schedule.git@develop#egg=td_visit_schedule
 git+https://github.com/botswana-harvard/edc-action-item.git@develop#egg=edc_action_item
