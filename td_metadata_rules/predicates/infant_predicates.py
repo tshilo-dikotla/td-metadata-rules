@@ -1,13 +1,11 @@
 from django.apps import apps as django_apps
 from django.core.exceptions import ValidationError
-from edc_constants.constants import YES
+from edc_constants.constants import YES, POS
 from edc_metadata_rules import PredicateCollection
 from edc_reference import LongitudinalRefset, site_reference_configs
 from edc_reference.models import Reference
 
 from td_maternal.helper_classes import MaternalStatusHelper
-
-from .maternal_predicates import MaternalPredicates
 
 
 class InfantPredicates(PredicateCollection):
@@ -18,6 +16,11 @@ class InfantPredicates(PredicateCollection):
     karabo_consent_model = f'{app_label}.karabosubjectconsent'
     karabo_screening_model = f'{app_label}.karabosubjectscreening'
     registered_subject_model = 'edc_registration.registeredsubject'
+    maternal_visit_model = 'td_maternal.maternalvisit'
+
+    @property
+    def maternal_visit_model_cls(self):
+        return django_apps.get_model(self.maternal_visit_model)
 
     @property
     def registered_subject_model_cls(self):
@@ -35,23 +38,18 @@ class InfantPredicates(PredicateCollection):
     def karabo_screening_model_cls(self):
         return django_apps.get_model(self.karabo_screening_model)
 
-    def get_latest_maternal_visit_status(self, visit=None, maternal_status_helper=None):
-        status = False
-        maternal_visit = Reference.objects.filter(
-            identifier=visit.subject_identifier[:-3],
-            timepoint='2000M')
+    def get_latest_maternal_hiv_status(self, visit=None, maternal_status_helper=None):
+        maternal_subject_id = visit.subject_identifier[:-3]
+        maternal_visit = self.maternal_visit_model_cls.objects.filter(
+            subject_identifier=maternal_subject_id).order_by('created').last()
+
         if maternal_visit:
-            maternal_visit = maternal_visit[0]
-            mpc = MaternalPredicates()
             maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
                 maternal_visit)
-            status = mpc.func_mother_pos(
-                maternal_visit, maternal_status_helper)
-        return status
+        return maternal_status_helper.hiv_status == POS
 
     def func_show_infant_arv_proph(self, visit=None, maternal_status_helper=None, **kwargs):
-        visit_list = ['2010', '2020', '2060', '2090',
-                      '2120', '2180', '2240', '2300', '2360']
+        visit_list = ['2010', '2020']
         # check visit code
         if visit.visit_code in visit_list:
             infant_arv_proph_required = Reference.objects.filter(
@@ -60,8 +58,8 @@ class InfantPredicates(PredicateCollection):
                 report_datetime__lt=visit.report_datetime).order_by('-report_datetime').first()
 
             if not infant_arv_proph_required and visit.visit_code == '2010':
-                return self.get_latest_maternal_visit_status(visit,
-                                                             maternal_status_helper)
+                return self.get_latest_maternal_hiv_status(visit,
+                                                           maternal_status_helper)
             elif infant_arv_proph_required:
                 infant_arv_proph_cls = django_apps.get_model(
                     'td_infant.infantarvproph')
@@ -79,27 +77,27 @@ class InfantPredicates(PredicateCollection):
                     return True
 
     def func_infant_heu(self, visit=None, maternal_status_helper=None, **kwargs):
-        return self.get_latest_maternal_visit_status(visit,
-                                                     maternal_status_helper)
+        return self.get_latest_maternal_hiv_status(visit,
+                                                   maternal_status_helper)
 
     def func_infant_heu_require_pcr(self, visit=None,
                                     maternal_status_helper=None, **kwargs):
 
         visit_list = ['2010', '2020', '2060']
         return (visit.visit_code in visit_list
-                and self.get_latest_maternal_visit_status(
+                and self.get_latest_maternal_hiv_status(
                     visit, maternal_status_helper))
 
     def func_require_infant_elisa(self, visit=None,
                                   maternal_status_helper=None, **kwargs):
         return (visit.visit_code == '2180'
-                and self.get_latest_maternal_visit_status(
+                and self.get_latest_maternal_hiv_status(
                     visit, maternal_status_helper))
 
     def func_require_infant_dbs(self, visit=None,
                                 maternal_status_helper=None, **kwargs):
         return (visit.visit_code == '2010'
-                and self.get_latest_maternal_visit_status(
+                and self.get_latest_maternal_hiv_status(
                     visit, maternal_status_helper))
 
     def func_show_infant_nvp_dispensing(self, visit=None,
@@ -123,7 +121,7 @@ class InfantPredicates(PredicateCollection):
             value = nvp_refsets.fieldset(
                 field_name='rx').all().values
 
-            return (self.get_latest_maternal_visit_status(
+            return (self.get_latest_maternal_hiv_status(
                 visit, maternal_status_helper)
                 and value[0].strip('\n') == 'NVP')
         return False
@@ -146,7 +144,7 @@ class InfantPredicates(PredicateCollection):
                     report_datetime=previous_nvp_dispensing.report_datetime,
                     field_name='nvp_prophylaxis',
                     timepoint='2000')
-                return (self.get_latest_maternal_visit_status(
+                return (self.get_latest_maternal_hiv_status(
                     visit, maternal_status_helper) and value[0] == YES)
         return False
 

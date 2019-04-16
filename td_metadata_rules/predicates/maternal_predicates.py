@@ -18,6 +18,7 @@ class MaternalPredicates(PredicateCollection):
         values = self.exists(
             reference_name=f'{self.app_label}.maternalultrasoundinitial',
             subject_identifier=visit.subject_identifier,
+            report_datetime=visit.report_datetime,
             field_name='number_of_gestations')
 
         if values[0]:
