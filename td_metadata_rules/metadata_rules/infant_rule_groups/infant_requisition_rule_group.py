@@ -1,6 +1,6 @@
 from edc_metadata import NOT_REQUIRED, REQUIRED
 from edc_metadata_rules import RequisitionRule, RequisitionRuleGroup, register
-from td_labs import dbs_panel, dna_pcr, elisa_panel
+from td_labs import dbs_panel, dna_pcr, infant_elisa_panel
 
 from ...predicates import InfantPredicates
 
@@ -28,7 +28,7 @@ class InfantRequisitionRuleGroup(RequisitionRuleGroup):
         predicate=pc.func_require_infant_elisa,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
-        target_panels=[elisa_panel])  # ??
+        target_panels=[infant_elisa_panel])
 
     class Meta:
         app_label = app_label
