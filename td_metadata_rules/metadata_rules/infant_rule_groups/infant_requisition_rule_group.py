@@ -12,23 +12,11 @@ pc = InfantPredicates()
 @register()
 class InfantRequisitionRuleGroup(RequisitionRuleGroup):
 
-    require_dna_pcr = RequisitionRule(
-        predicate=pc.func_infant_heu_require_pcr,
+    require_heu_requisitions = RequisitionRule(
+        predicate=pc.func_infant_heu,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
-        target_panels=[dna_pcr])
-
-    require_dbs = RequisitionRule(
-        predicate=pc.func_require_infant_dbs,
-        consequence=REQUIRED,
-        alternative=NOT_REQUIRED,
-        target_panels=[dbs_panel])
-
-    require_elisa = RequisitionRule(
-        predicate=pc.func_require_infant_elisa,
-        consequence=REQUIRED,
-        alternative=NOT_REQUIRED,
-        target_panels=[infant_elisa_panel])
+        target_panels=[dna_pcr, dbs_panel, infant_elisa_panel])
 
     class Meta:
         app_label = app_label
