@@ -139,34 +139,21 @@ class InfantPredicates(PredicateCollection):
         return visit.appointment.timepoint < 180 and value[0] == YES
 
     def func_show_karabo_tb_history(self, visit, **kwargs):
-        relative_identifier = None
         if not self.show_karabo_offstudy(visit=visit):
+            subject_identifier = visit.appointment.subject_identifier
             try:
-                relative_identifier = self.registered_subject_model_cls.objects.get(
-                    subject_identifier=visit.appointment.subject_identifier).relative_identifier
-            except self.registered_subject_model_cls.DoesNotExist:
-                raise ValidationError(
-                    f'Registered subject for {visit.appointment.subject_identifier} '
-                    'not found.')
+                karabo_screening = self.karabo_screening_model_cls.objects.get(
+                    subject_identifier=subject_identifier)
+            except self.karabo_screening_model_cls.DoesNotExist:
+                return False
             else:
-                return self.check_for_karabo_consent(
-                    relative_identifier=relative_identifier)
-
-    def check_for_karabo_consent(self, relative_identifier=None):
-
-        try:
-            karabo_screening = self.karabo_screening_model_cls.objects.get(
-                subject_identifier=relative_identifier)
-        except self.karabo_screening_model_cls.DoesNotExist:
-            return False
-        else:
-            if karabo_screening.is_eligible:
-                try:
-                    self.karabo_consent_model_cls.objects.get(
-                        subject_identifier=relative_identifier)
-                    return True
-                except self.karabo_consent_model_cls.DoesNotExist:
-                    raise ValidationError(
-                        'Participant is eligible for Karabo sub-study, please complete '
-                        'Karabo subject consent.')
-            return False
+                if karabo_screening.is_eligible:
+                    try:
+                        self.karabo_consent_model_cls.objects.get(
+                            subject_identifier=subject_identifier)
+                        return True
+                    except self.karabo_consent_model_cls.DoesNotExist:
+                        raise ValidationError(
+                            'Participant is eligible for Karabo sub-study, please complete '
+                            'Karabo subject consent.')
+                return False
