@@ -13,8 +13,8 @@ class InfantPredicates(PredicateCollection):
     app_label = 'td_infant'
     visit_model = f'{app_label}.infantvisit'
     karabo_tb_model = f'{app_label}.karabotuberculosishistory'
-    karabo_consent_model = f'{app_label}.karabosubjectconsent'
-    karabo_screening_model = f'{app_label}.karabosubjectscreening'
+    karabo_consent_model = f'td_maternal.karabosubjectconsent'
+    karabo_screening_model = f'td_maternal.karabosubjectscreening'
     registered_subject_model = 'edc_registration.registeredsubject'
     maternal_visit_model = 'td_maternal.maternalvisit'
 
