@@ -139,18 +139,26 @@ class InfantPredicates(PredicateCollection):
         return visit.appointment.timepoint < 180 and value[0] == YES
 
     def func_show_karabo_tb_history(self, visit, **kwargs):
+
         if not self.show_karabo_offstudy(visit=visit):
-            subject_identifier = visit.appointment.subject_identifier
+
+            try:
+                maternal_subject_id = self.registered_subject_model_cls.objects.get(
+                    subject_identifier=visit.appointment.subject_identifier).relative_identifier
+            except self.registered_subject_model_cls.DoesNotExist:
+                raise ValidationError(
+                    'Maternal registered subject not found for '
+                    f'infant id: {visit.appointment.subject_identifier}')
             try:
                 karabo_screening = self.karabo_screening_model_cls.objects.get(
-                    subject_identifier=subject_identifier)
+                    subject_identifier=maternal_subject_id)
             except self.karabo_screening_model_cls.DoesNotExist:
                 return False
             else:
                 if karabo_screening.is_eligible:
                     try:
                         self.karabo_consent_model_cls.objects.get(
-                            subject_identifier=subject_identifier)
+                            subject_identifier=maternal_subject_id)
                         return True
                     except self.karabo_consent_model_cls.DoesNotExist:
                         raise ValidationError(
