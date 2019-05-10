@@ -13,8 +13,8 @@ class InfantPredicates(PredicateCollection):
     app_label = 'td_infant'
     visit_model = f'{app_label}.infantvisit'
     karabo_tb_model = f'{app_label}.karabotuberculosishistory'
-    karabo_consent_model = f'td_maternal.karabosubjectconsent'
-    karabo_screening_model = f'td_maternal.karabosubjectscreening'
+    karabo_consent_model = 'td_maternal.karabosubjectconsent'
+    karabo_screening_model = 'td_maternal.karabosubjectscreening'
     registered_subject_model = 'edc_registration.registeredsubject'
     maternal_visit_model = 'td_maternal.maternalvisit'
 
@@ -39,7 +39,7 @@ class InfantPredicates(PredicateCollection):
         return django_apps.get_model(self.karabo_screening_model)
 
     def get_latest_maternal_hiv_status(self, visit=None, maternal_status_helper=None):
-        maternal_subject_id = visit.subject_identifier[:-3]
+        maternal_subject_id = visit.appointment.subject_identifier[:-3]
         maternal_visit = self.maternal_visit_model_cls.objects.filter(
             subject_identifier=maternal_subject_id).order_by('created').last()
 
@@ -54,7 +54,7 @@ class InfantPredicates(PredicateCollection):
         if visit.visit_code in visit_list:
             infant_arv_proph_required = Reference.objects.filter(
                 model=f'{self.app_label}.infantarvproph',
-                identifier=visit.subject_identifier,
+                identifier=visit.appointment.subject_identifier,
                 report_datetime__lt=visit.report_datetime).order_by('-report_datetime').first()
 
             if not infant_arv_proph_required and visit.visit_code == '2010':
@@ -65,7 +65,7 @@ class InfantPredicates(PredicateCollection):
                     'td_infant.infantarvproph')
                 try:
                     infant_arv_proph_model = infant_arv_proph_cls.objects.get(
-                        subject_identifier=visit.subject_identifier,
+                        subject_identifier=visit.appointment.subject_identifier,
                         report_datetime=infant_arv_proph_required.report_datetime)
                 except infant_arv_proph_cls.DoesNotExist:
                     return False
@@ -85,7 +85,7 @@ class InfantPredicates(PredicateCollection):
         maternal_rando = Reference.objects.filter(
             model='td_maternal.maternalrando',
             report_datetime__lt=visit.report_datetime,
-            identifier=visit.subject_identifier[:-3]).order_by(
+            identifier=visit.appointment.subject_identifier[:-3]).order_by(
             '-report_datetime').last()
 
         if maternal_rando:
@@ -94,7 +94,7 @@ class InfantPredicates(PredicateCollection):
                 visit_model='td_maternal.maternalvisit',
                 reference_model_cls=django_apps.get_model(
                     site_reference_configs.get_reference_model('td_maternal.maternalvisit')),
-                subject_identifier=visit.subject_identifier[:-3],
+                subject_identifier=visit.appointment.subject_identifier[:-3],
                 report_datetime=maternal_rando.report_datetime,
             )
 
@@ -113,14 +113,14 @@ class InfantPredicates(PredicateCollection):
 
             previous_nvp_dispensing = Reference.objects.filter(
                 model=f'{self.app_label}.infantnvpdispensing',
-                identifier=visit.subject_identifier,
+                identifier=visit.appointment.subject_identifier,
                 report_datetime__lt=visit.report_datetime).order_by(
                 '-report_datetime').first()
 
             if previous_nvp_dispensing:
                 value = self.exists(
                     reference_name=f'{self.app_label}.infantnvpdispensing',
-                    subject_identifier=visit.subject_identifier,
+                    subject_identifier=visit.appointment.subject_identifier,
                     report_datetime=previous_nvp_dispensing.report_datetime,
                     field_name='nvp_prophylaxis',
                     timepoint='2000')
@@ -133,7 +133,7 @@ class InfantPredicates(PredicateCollection):
             return True
         value = self.exists(
             reference_name=f'{self.app_label}.karabotuberculosishistory',
-            subject_identifier=visit.subject_identifier,
+            subject_identifier=visit.appointment.subject_identifier,
             field_name='put_offstudy',
             timepoint=visit.visit_code)
         return visit.appointment.timepoint < 180 and value[0] == YES
