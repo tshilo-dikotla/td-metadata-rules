@@ -125,7 +125,7 @@ class MaternalPredicates(PredicateCollection):
          last visit."""
 
         visit_list = ['2010M', '2020M', '2060M', '2120M', '2180M',
-                      '2240', '2300M', '2360M']
+                      '2240M', '2300M', '2360M']
 
         previous_maternal_contr = Reference.objects.filter(
             model=f'{self.app_label}.maternalcontraception',
