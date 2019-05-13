@@ -65,7 +65,7 @@ class InfantPredicates(PredicateCollection):
                     'td_infant.infantarvproph')
                 try:
                     infant_arv_proph_model = infant_arv_proph_cls.objects.get(
-                        subject_identifier=visit.appointment.subject_identifier,
+                        infant_visit__subject_identifier=visit.appointment.subject_identifier,
                         report_datetime=infant_arv_proph_required.report_datetime)
                 except infant_arv_proph_cls.DoesNotExist:
                     return False
