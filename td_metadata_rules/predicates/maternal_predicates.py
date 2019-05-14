@@ -133,10 +133,16 @@ class MaternalPredicates(PredicateCollection):
             report_datetime__lt=visit.report_datetime).order_by(
                 '-report_datetime').first()
 
-        if previous_maternal_contr and visit.visit_code in visit_list:
-            values = self.exists(
-                reference_name=f'{self.app_label}.maternalcontraception',
-                subject_identifier=visit.subject_identifier,
-                report_datetime=previous_maternal_contr.report_datetime,
-                field_name='srh_referral')
-            return (values[0] == YES)
+        if previous_maternal_contr:
+            prev_maternal_srh = Reference.objects.filter(
+                model=f'{self.app_label}.maternalsrh',
+                identifier=visit.subject_identifier,
+                report_datetime__gt=previous_maternal_contr.report_datetime)
+
+            if (not prev_maternal_srh and visit.visit_code in visit_list):
+                values = self.exists(
+                    reference_name=f'{self.app_label}.maternalcontraception',
+                    subject_identifier=visit.subject_identifier,
+                    report_datetime=previous_maternal_contr.report_datetime,
+                    field_name='srh_referral')
+                return (values[0] == YES)
