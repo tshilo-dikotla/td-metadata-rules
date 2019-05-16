@@ -80,6 +80,26 @@ class InfantPredicates(PredicateCollection):
         return self.get_latest_maternal_hiv_status(visit,
                                                    maternal_status_helper)
 
+    def func_infant_heu_require_pcr(self, visit=None,
+                                    maternal_status_helper=None, **kwargs):
+
+        visit_list = ['2010', '2020', '2060']
+        return (visit.visit_code in visit_list
+                and self.get_latest_maternal_hiv_status(
+                    visit, maternal_status_helper))
+
+    def func_require_infant_elisa(self, visit=None,
+                                  maternal_status_helper=None, **kwargs):
+        return (visit.visit_code == '2180'
+                and self.get_latest_maternal_hiv_status(
+                    visit, maternal_status_helper))
+
+    def func_require_infant_dbs(self, visit=None,
+                                maternal_status_helper=None, **kwargs):
+        return (visit.visit_code == '2010'
+                and self.get_latest_maternal_hiv_status(
+                    visit, maternal_status_helper))
+
     def func_show_infant_nvp_dispensing(self, visit=None,
                                         maternal_status_helper=None, **kwargs):
         maternal_rando = Reference.objects.filter(
