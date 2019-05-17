@@ -83,7 +83,7 @@ class InfantPredicates(PredicateCollection):
     def func_infant_heu_require_pcr(self, visit=None,
                                     maternal_status_helper=None, **kwargs):
 
-        visit_list = ['2010', '2020', '2060']
+        visit_list = ['2010', '2020', '2060', '2120']
         return (visit.visit_code in visit_list
                 and self.get_latest_maternal_hiv_status(
                     visit, maternal_status_helper))
