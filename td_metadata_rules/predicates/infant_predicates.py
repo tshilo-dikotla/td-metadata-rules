@@ -97,7 +97,7 @@ class InfantPredicates(PredicateCollection):
     def func_require_infant_dbs(self, visit=None,
                                 maternal_status_helper=None, **kwargs):
         return (visit.visit_code == '2010'
-                and self.get_latest_maternal_hiv_status(
+                and not self.get_latest_maternal_hiv_status(
                     visit, maternal_status_helper))
 
     def func_show_infant_nvp_dispensing(self, visit=None,
