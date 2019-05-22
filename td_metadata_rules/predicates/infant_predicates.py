@@ -185,3 +185,7 @@ class InfantPredicates(PredicateCollection):
                             'Participant is eligible for Karabo sub-study, please complete '
                             'Karabo subject consent.')
                 return False
+
+    def func_show_karabo_requisitions(self, visit, **kwargs):
+        return (self.func_show_karabo_tb_history(visit=visit)
+                and visit.visit_code in ['2060', '2120'])
