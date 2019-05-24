@@ -1,5 +1,7 @@
 from edc_metadata import NOT_REQUIRED, REQUIRED
 from edc_metadata_rules import CrfRule, CrfRuleGroup, register
+from edc_metadata_rules import RequisitionRuleGroup, RequisitionRule
+from td_labs import infant_wb_panel, infant_pbmc_pl_panel
 
 from ...predicates import InfantPredicates
 
@@ -33,3 +35,18 @@ class KaraboOffstudyRuleGroup(CrfRuleGroup):
     class Meta:
         app_label = app_label
         source_model = f'{app_label}.karabotuberculosishistory'
+
+
+@register()
+class KaraboRequisition(RequisitionRuleGroup):
+
+    require_heu_requisitions = RequisitionRule(
+        predicate=pc.func_show_karabo_requisitions,
+        consequence=REQUIRED,
+        alternative=NOT_REQUIRED,
+        target_panels=[infant_wb_panel, infant_pbmc_pl_panel])
+
+    class Meta:
+        app_label = app_label
+        source_model = f'{app_label}.infantvisit'
+        requisition_model = f'{app_label}.infantrequisition'
