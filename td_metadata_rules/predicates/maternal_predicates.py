@@ -58,8 +58,7 @@ class MaternalPredicates(PredicateCollection):
         return False
 
     def func_show_postpartum_depression(self, visit=None, **kwargs):
-        visit_list = ['2010M', '2020M', '2060M', '2120M', '2180M', '2240M',
-                      '2300M', '2360M']
+        visit_list = ['2010M', '2020M', '2060M', '2120M']
         if visit.visit_code in visit_list:
             return not Reference.objects.filter(
                 model=f'{self.app_label}.maternalpostpartumdep',
