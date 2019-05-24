@@ -107,4 +107,4 @@ venv.bak/
 .project
 .pydevproject
 .settings/
-/metadata_rules/.DS_Store
+.DS_Store
