@@ -57,6 +57,14 @@ class MaternalPredicates(PredicateCollection):
             return maternal_status_helper.eligible_for_cd4
         return False
 
+    def func_show_postpartum_depression(self, visit=None, **kwargs):
+        visit_list = ['2010M', '2020M', '2060M', '2120M']
+        if visit.visit_code in visit_list:
+            return not Reference.objects.filter(
+                model=f'{self.app_label}.maternalpostpartumdep',
+                identifier=visit.subject_identifier,
+                report_datetime__lt=visit.report_datetime).exists()
+
     def func_show_ultrasound_form(self, visit=None, **kwargs):
         """Return true if ultrasound form has to be filled."""
         if visit.visit_code == '1000M':
