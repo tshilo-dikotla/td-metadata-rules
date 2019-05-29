@@ -181,9 +181,10 @@ class InfantPredicates(PredicateCollection):
                             subject_identifier=maternal_subject_id)
                         return True
                     except self.karabo_consent_model_cls.DoesNotExist:
-                        raise ValidationError(
-                            'Participant is eligible for Karabo sub-study, please complete '
-                            'Karabo subject consent.')
+                        pass
+#                         raise ValidationError(
+#                             'Participant is eligible for Karabo sub-study, please complete '
+#                             'Karabo subject consent.')
                 return False
 
     def func_show_karabo_requisitions(self, visit, **kwargs):

@@ -4,5 +4,4 @@ from .maternal_rule_groups import MaternalRequisitionRuleGroup
 from .maternal_rule_groups import MaternalRequisitionRuleGroupCD4
 from .maternal_rule_groups import MaternalSrhServicesRuleGroup
 from .maternal_rule_groups import MaternalUltrasoundInitialRuleGroup
-from .maternal_rule_groups import PostPartumDepressionRuleGroup
 from .maternal_rule_groups import RapidTestResultGroup
