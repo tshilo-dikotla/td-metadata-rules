@@ -188,5 +188,5 @@ class InfantPredicates(PredicateCollection):
                 return False
 
     def func_show_karabo_requisitions(self, visit, **kwargs):
-        return (self.func_show_karabo_tb_history(visit=visit)
-                and visit.visit_code in ['2060', '2120'])
+        if visit.visit_code in ['2060', '2120']:
+            return self.func_show_karabo_tb_history(visit=visit)
