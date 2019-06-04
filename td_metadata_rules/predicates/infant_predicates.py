@@ -149,44 +149,46 @@ class InfantPredicates(PredicateCollection):
         return False
 
     def show_karabo_offstudy(self, visit, **kwargs):
-        if visit.visit_code == '2180':
-            return True
-        value = self.exists(
-            reference_name=f'{self.app_label}.karabotuberculosishistory',
-            subject_identifier=visit.appointment.subject_identifier,
-            field_name='put_offstudy',
-            timepoint=visit.visit_code)
-        return visit.appointment.timepoint < 180 and value[0] == YES
-
-    def func_show_karabo_tb_history(self, visit, **kwargs):
-
-        if not self.show_karabo_offstudy(visit=visit):
-
-            try:
-                maternal_subject_id = self.registered_subject_model_cls.objects.get(
-                    subject_identifier=visit.appointment.subject_identifier).relative_identifier
-            except self.registered_subject_model_cls.DoesNotExist:
-                raise ValidationError(
-                    'Maternal registered subject not found for '
-                    f'infant id: {visit.appointment.subject_identifier}')
-            try:
-                karabo_screening = self.karabo_screening_model_cls.objects.get(
-                    subject_identifier=maternal_subject_id)
-            except self.karabo_screening_model_cls.DoesNotExist:
-                return False
+        if self.is_karabo_eligible(visit=visit):
+            if visit.visit_code == '2180':
+                return True
             else:
-                if karabo_screening.is_eligible:
-                    try:
-                        self.karabo_consent_model_cls.objects.get(
-                            subject_identifier=maternal_subject_id)
-                        return True
-                    except self.karabo_consent_model_cls.DoesNotExist:
-                        pass
+                value = self.exists(
+                    reference_name=f'{self.app_label}.karabotuberculosishistory',
+                    subject_identifier=visit.appointment.subject_identifier,
+                    field_name='put_offstudy',
+                    timepoint=visit.visit_code)
+                return visit.appointment.timepoint < 180 and value[0] == YES
+
+    def is_karabo_eligible(self, visit, **kwargs):
+        try:
+            maternal_subject_id = self.registered_subject_model_cls.objects.get(
+                subject_identifier=visit.appointment.subject_identifier).relative_identifier
+        except self.registered_subject_model_cls.DoesNotExist:
+            raise ValidationError(
+                'Maternal registered subject not found for '
+                f'infant id: {visit.appointment.subject_identifier}')
+        try:
+            karabo_screening = self.karabo_screening_model_cls.objects.get(
+                subject_identifier=maternal_subject_id)
+        except self.karabo_screening_model_cls.DoesNotExist:
+#             raise ValidationError(
+#                 'Participant is eligible for Karabo sub-study, please '
+#                 'complete Karabo subject screening.')
+            return False
+        else:
+            if karabo_screening.is_eligible:
+                try:
+                    self.karabo_consent_model_cls.objects.get(
+                        subject_identifier=maternal_subject_id)
+                    return True
+                except self.karabo_consent_model_cls.DoesNotExist:
+                    return False
 #                         raise ValidationError(
 #                             'Participant is eligible for Karabo sub-study, please complete '
 #                             'Karabo subject consent.')
-                return False
+                return True
 
     def func_show_karabo_requisitions(self, visit, **kwargs):
         if visit.visit_code in ['2060', '2120']:
-            return self.func_show_karabo_tb_history(visit=visit)
+            return self.is_karabo_eligible(visit=visit)
