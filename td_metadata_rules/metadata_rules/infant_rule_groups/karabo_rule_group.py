@@ -38,14 +38,14 @@ class KaraboOffstudyRuleGroup(CrfRuleGroup):
 
 
 @register()
-class KaraboRequisition(RequisitionRuleGroup):
-
+class KaraboRequisitionRuleGroup(RequisitionRuleGroup):
+    
     require_heu_requisitions = RequisitionRule(
         predicate=pc.func_show_karabo_requisitions,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
         target_panels=[infant_wb_panel, infant_pbmc_pl_panel])
-
+ 
     class Meta:
         app_label = app_label
         source_model = f'{app_label}.infantvisit'

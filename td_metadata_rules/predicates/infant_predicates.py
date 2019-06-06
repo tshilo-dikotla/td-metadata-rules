@@ -192,3 +192,5 @@ class InfantPredicates(PredicateCollection):
     def func_show_karabo_requisitions(self, visit, **kwargs):
         if visit.visit_code in ['2060', '2120']:
             return self.is_karabo_eligible(visit=visit)
+        else:
+            return True

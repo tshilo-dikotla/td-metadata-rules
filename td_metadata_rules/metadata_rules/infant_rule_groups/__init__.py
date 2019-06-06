@@ -7,4 +7,4 @@ from .infant_fu_physical_rule_group import InfantFuPhysicalRuleGroup
 from .infant_nvp_adjustment_rule_group import InfantNvpAdjustmentRuleGroup
 from .infant_nvp_dispensing_rule_group import InfantNvpDispensingRuleGroup
 from .infant_requisition_rule_group import InfantRequisitionRuleGroup
-from .karabo_rule_group import KaraboTbRuleGroup, KaraboOffstudyRuleGroup
+from .karabo_rule_group import KaraboTbRuleGroup, KaraboOffstudyRuleGroup, KaraboRequisitionRuleGroup
