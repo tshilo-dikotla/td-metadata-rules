@@ -194,3 +194,7 @@ class InfantPredicates(PredicateCollection):
             return self.is_karabo_eligible(visit=visit)
         else:
             return True
+
+    def func_show_paxgene_requisition(self, visit, **kwargs):
+        if visit.visit_code in ['2010']:
+            return self.is_karabo_eligible(visit=visit)
