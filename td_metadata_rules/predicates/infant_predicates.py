@@ -197,7 +197,7 @@ class InfantPredicates(PredicateCollection):
     def  func_show_karabo_tb_form(self, visit, **kwargs):
         try:
             self.karabo_offstudy_model_cls.objects.get(
-                subject_identifier=visit.appointment.subject_identifier)
+                infant_visit__subject_identifier=visit.appointment.subject_identifier)
         except self.karabo_offstudy_model_cls.DoesNotExist:
             return self.is_karabo_eligible(visit)
         else:
