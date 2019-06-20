@@ -1,7 +1,7 @@
 from edc_metadata import NOT_REQUIRED, REQUIRED
 from edc_metadata_rules import CrfRule, CrfRuleGroup, register
 from edc_metadata_rules import RequisitionRuleGroup, RequisitionRule
-from td_labs import karabo_wb_pbmc_pl_panel, infant_paxgene_panel
+from td_labs import karabo_wb_pbmc_pl_panel, infant_paxgene_panel, karabo_pbmc_pl_panel
 
 from ...predicates import InfantPredicates
 
@@ -44,7 +44,8 @@ class KaraboRequisitionRuleGroup(RequisitionRuleGroup):
         predicate=pc.func_show_karabo_requisitions,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
-        target_panels=[infant_paxgene_panel, karabo_wb_pbmc_pl_panel])
+        target_panels=[infant_paxgene_panel, karabo_wb_pbmc_pl_panel,
+                       karabo_pbmc_pl_panel])
 
     class Meta:
         app_label = app_label
