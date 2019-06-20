@@ -13,7 +13,7 @@ pc = InfantPredicates()
 class KaraboTbRuleGroup(CrfRuleGroup):
 
     require_tb_form = CrfRule(
-        predicate=pc.is_karabo_eligible,
+        predicate=pc.func_show_karabo_tb_form,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
         target_models=[(f'{app_label}.karabotuberculosishistory')])
@@ -39,7 +39,7 @@ class KaraboOffstudyRuleGroup(CrfRuleGroup):
 
 @register()
 class KaraboRequisitionRuleGroup(RequisitionRuleGroup):
-    
+
     require_heu_requisitions = RequisitionRule(
         predicate=pc.func_show_karabo_requisitions,
         consequence=REQUIRED,

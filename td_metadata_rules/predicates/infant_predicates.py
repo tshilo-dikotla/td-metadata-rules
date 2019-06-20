@@ -15,6 +15,7 @@ class InfantPredicates(PredicateCollection):
     karabo_tb_model = f'{app_label}.karabotuberculosishistory'
     karabo_consent_model = 'td_maternal.karabosubjectconsent'
     karabo_screening_model = 'td_maternal.karabosubjectscreening'
+    karabo_offstudy_model = f'{app_label}.karabooffstudy'
     registered_subject_model = 'edc_registration.registeredsubject'
     maternal_visit_model = 'td_maternal.maternalvisit'
 
@@ -29,6 +30,10 @@ class InfantPredicates(PredicateCollection):
     @property
     def karabo_tb_model_cls(self):
         return django_apps.get_model(self.karabo_tb_model)
+
+    @property
+    def karabo_offstudy_model_cls(self):
+        return django_apps.get_model(self.karabo_offstudy_model)
 
     @property
     def karabo_consent_model_cls(self):
@@ -189,8 +194,22 @@ class InfantPredicates(PredicateCollection):
 #                             'Karabo subject consent.')
                 return True
 
-    def func_show_karabo_requisitions(self, visit, **kwargs):
-        if visit.visit_code in ['2010', '2060', '2120', '2180']:
-            return self.is_karabo_eligible(visit=visit)
+    def  func_show_karabo_tb_form(self, visit, **kwargs):
+        try:
+            self.karabo_offstudy_model_cls.objects.get(
+                subject_identifier=visit.appointment.subject_identifier)
+        except self.karabo_offstudy_model_cls.DoesNotExist:
+            return self.is_karabo_eligible(visit)
         else:
-            return True
+            return False
+
+    def func_show_karabo_requisitions(self, visit, **kwargs):
+        try:
+            self.karabo_offstudy_model_cls.objects.get(
+                subject_identifier=visit.appointment.subject_identifier)
+        except self.karabo_offstudy_model_cls.DoesNotExist:
+
+            if visit.visit_code in ['2010', '2060', '2120', '2180']:
+                return self.is_karabo_eligible(visit=visit)
+        else:
+            return False
