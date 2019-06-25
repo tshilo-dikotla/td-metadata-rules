@@ -18,6 +18,7 @@ class InfantPredicates(PredicateCollection):
     karabo_offstudy_model = f'{app_label}.karabooffstudy'
     registered_subject_model = 'edc_registration.registeredsubject'
     maternal_visit_model = 'td_maternal.maternalvisit'
+    infant_offstudy_model = 'td_prn.infantoffstudy'
 
     @property
     def maternal_visit_model_cls(self):
@@ -41,6 +42,10 @@ class InfantPredicates(PredicateCollection):
 
     @property
     def karabo_screening_model_cls(self):
+        return django_apps.get_model(self.karabo_screening_model)
+
+    @property
+    def infant_off_study_model_cls(self):
         return django_apps.get_model(self.karabo_screening_model)
 
     def get_latest_maternal_hiv_status(self, visit=None, maternal_status_helper=None):
@@ -154,7 +159,8 @@ class InfantPredicates(PredicateCollection):
         return False
 
     def show_karabo_offstudy(self, visit, **kwargs):
-        if self.is_karabo_eligible(visit=visit):
+        if (self.is_karabo_eligible(visit=visit) and
+                not self.check_infant_offstudy(visit=visit)):
             if visit.visit_code == '2180':
                 return True
             else:
@@ -166,50 +172,55 @@ class InfantPredicates(PredicateCollection):
                 return visit.appointment.timepoint < 180 and value[0] == YES
 
     def is_karabo_eligible(self, visit, **kwargs):
-        try:
-            maternal_subject_id = self.registered_subject_model_cls.objects.get(
-                subject_identifier=visit.appointment.subject_identifier).relative_identifier
-        except self.registered_subject_model_cls.DoesNotExist:
-            raise ValidationError(
-                'Maternal registered subject not found for '
-                f'infant id: {visit.appointment.subject_identifier}')
-        try:
-            karabo_screening = self.karabo_screening_model_cls.objects.get(
-                subject_identifier=maternal_subject_id)
-        except self.karabo_screening_model_cls.DoesNotExist:
-#             raise ValidationError(
-#                 'Participant is eligible for Karabo sub-study, please '
-#                 'complete Karabo subject screening.')
-            return False
-        else:
-            if karabo_screening.is_eligible:
-                try:
-                    self.karabo_consent_model_cls.objects.get(
-                        subject_identifier=maternal_subject_id)
+        if not self.check_infant_offstudy and not self.check_karabo_offstudy:
+            try:
+                maternal_subject_id = self.registered_subject_model_cls.objects.get(
+                    subject_identifier=visit.appointment.subject_identifier).relative_identifier
+            except self.registered_subject_model_cls.DoesNotExist:
+                raise ValidationError(
+                    'Maternal registered subject not found for '
+                    f'infant id: {visit.appointment.subject_identifier}')
+            try:
+                karabo_screening = self.karabo_screening_model_cls.objects.get(
+                    subject_identifier=maternal_subject_id)
+            except self.karabo_screening_model_cls.DoesNotExist:
+                return False
+            else:
+                if karabo_screening.is_eligible:
+                    try:
+                        self.karabo_consent_model_cls.objects.get(
+                            subject_identifier=maternal_subject_id)
+                        return True
+                    except self.karabo_consent_model_cls.DoesNotExist:
+                        raise ValidationError(
+                            'Participant is eligible for Karabo sub-study, please complete '
+                            'Karabo subject consent.')
                     return True
-                except self.karabo_consent_model_cls.DoesNotExist:
-                    return False
-#                         raise ValidationError(
-#                             'Participant is eligible for Karabo sub-study, please complete '
-#                             'Karabo subject consent.')
-                return True
 
-    def  func_show_karabo_tb_form(self, visit, **kwargs):
-        try:
-            self.karabo_offstudy_model_cls.objects.get(
-                infant_visit__subject_identifier=visit.appointment.subject_identifier)
-        except self.karabo_offstudy_model_cls.DoesNotExist:
-            return self.is_karabo_eligible(visit)
-        else:
-            return False
+    def func_show_karabo_tb_form(self, visit, **kwargs):
+        return (self.is_karabo_eligible(visit) and not self.check_infant_offstudy(visit=visit))
 
     def func_show_karabo_requisitions(self, visit, **kwargs):
+        if visit.visit_code in ['2010', '2060', '2120', '2180']:
+            return (self.is_karabo_eligible(visit=visit) and
+                    not self.check_infant_offstudy(visit=visit))
+        else:
+            return False
+
+    def check_karabo_offstudy(self, visit):
         try:
             self.karabo_offstudy_model_cls.objects.get(
                 infant_visit__subject_identifier=visit.appointment.subject_identifier)
         except self.karabo_offstudy_model_cls.DoesNotExist:
-
-            if visit.visit_code in ['2010', '2060', '2120', '2180']:
-                return self.is_karabo_eligible(visit=visit)
-        else:
             return False
+        else:
+            return True
+
+    def check_infant_offstudy(self, visit):
+        try:
+            self.infant_offstudy_model.objects.get(
+                subject_identifier=visit.appointment.subject_identifier)
+        except self.infant_offstudy_model.DoesNotExist:
+            return False
+        else:
+            return True
