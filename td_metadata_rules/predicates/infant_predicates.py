@@ -198,12 +198,11 @@ class InfantPredicates(PredicateCollection):
                     return True
 
     def func_show_karabo_tb_form(self, visit, **kwargs):
-        return (self.is_karabo_eligible(visit) and not self.check_infant_offstudy(visit=visit))
+        return self.is_karabo_eligible(visit)
 
     def func_show_karabo_requisitions(self, visit, **kwargs):
         if visit.visit_code in ['2010', '2060', '2120', '2180']:
-            return (self.is_karabo_eligible(visit=visit) and
-                    not self.check_infant_offstudy(visit=visit))
+            return self.is_karabo_eligible(visit=visit)
         else:
             return False
 
