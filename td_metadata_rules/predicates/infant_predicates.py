@@ -159,8 +159,7 @@ class InfantPredicates(PredicateCollection):
         return False
 
     def show_karabo_offstudy(self, visit, **kwargs):
-        if (self.is_karabo_eligible(visit=visit) and
-                not self.check_infant_offstudy(visit=visit)):
+        if self.is_karabo_eligible(visit=visit):
             if visit.visit_code == '2180':
                 return True
             else:
