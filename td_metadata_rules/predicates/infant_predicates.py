@@ -46,7 +46,7 @@ class InfantPredicates(PredicateCollection):
 
     @property
     def infant_off_study_model_cls(self):
-        return django_apps.get_model(self.karabo_screening_model)
+        return django_apps.get_model(self.infant_offstudy_model)
 
     def get_latest_maternal_hiv_status(self, visit=None, maternal_status_helper=None):
         maternal_subject_id = visit.appointment.subject_identifier[:-3]
@@ -171,7 +171,8 @@ class InfantPredicates(PredicateCollection):
                 return visit.appointment.timepoint < 180 and value[0] == YES
 
     def is_karabo_eligible(self, visit, **kwargs):
-        if not self.check_infant_offstudy and not self.check_karabo_offstudy:
+        if (not self.check_infant_offstudy(visit=visit) and
+                not self.check_karabo_offstudy(visit=visit)):
             try:
                 maternal_subject_id = self.registered_subject_model_cls.objects.get(
                     subject_identifier=visit.appointment.subject_identifier).relative_identifier
@@ -217,9 +218,9 @@ class InfantPredicates(PredicateCollection):
 
     def check_infant_offstudy(self, visit):
         try:
-            self.infant_offstudy_model.objects.get(
+            self.infant_off_study_model_cls.objects.get(
                 subject_identifier=visit.appointment.subject_identifier)
-        except self.infant_offstudy_model.DoesNotExist:
+        except self.infant_off_study_model_cls.DoesNotExist:
             return False
         else:
             return True
