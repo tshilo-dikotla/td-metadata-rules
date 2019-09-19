@@ -40,12 +40,23 @@ class KaraboOffstudyRuleGroup(CrfRuleGroup):
 @register()
 class KaraboRequisitionRuleGroup(RequisitionRuleGroup):
 
-    require_heu_requisitions = RequisitionRule(
-        predicate=pc.func_show_karabo_requisitions,
+    show_infant_paxgene = RequisitionRule(
+        predicate=pc.func_show_infant_paxgene_panel,
         consequence=REQUIRED,
         alternative=NOT_REQUIRED,
-        target_panels=[infant_paxgene_panel, karabo_wb_pbmc_pl_panel,
-                       karabo_pbmc_pl_panel])
+        target_panels=[infant_paxgene_panel])
+
+    show_karabo_pbmc_pl = RequisitionRule(
+        predicate=pc.func_show_karabo_pbmc_pl_panel,
+        consequence=REQUIRED,
+        alternative=NOT_REQUIRED,
+        target_panels=[karabo_pbmc_pl_panel])
+
+    show_karabo_wb_pbmc_pl_panel = RequisitionRule(
+        predicate=pc.func_show_karabo_wb_pbmc_pl_panel,
+        consequence=REQUIRED,
+        alternative=NOT_REQUIRED,
+        target_panels=[karabo_wb_pbmc_pl_panel])
 
     class Meta:
         app_label = app_label
