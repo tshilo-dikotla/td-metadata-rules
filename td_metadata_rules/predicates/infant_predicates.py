@@ -200,11 +200,14 @@ class InfantPredicates(PredicateCollection):
     def func_show_karabo_tb_form(self, visit, **kwargs):
         return self.is_karabo_eligible(visit)
 
-    def func_show_karabo_requisitions(self, visit, **kwargs):
-        if visit.visit_code in ['2010', '2060', '2120', '2180']:
-            return self.is_karabo_eligible(visit=visit)
-        else:
-            return False
+    def func_show_karabo_wb_pbmc_pl_panel(self, visit, **kwargs):
+        return self.is_karabo_eligible(visit=visit) and visit.visit_code == '2060'
+
+    def func_show_infant_paxgene_panel(self, visit, **kwargs):
+        return self.is_karabo_eligible(visit) and visit.visit_code == '2010'
+
+    def func_show_karabo_pbmc_pl_panel(self, visit, **kwargs):
+        return self.is_karabo_eligible(visit) and visit.visit_code in ['2120', '2180']
 
     def check_karabo_offstudy(self, visit):
         try:
