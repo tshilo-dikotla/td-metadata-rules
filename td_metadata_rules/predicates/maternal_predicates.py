@@ -39,7 +39,9 @@ class MaternalPredicates(PredicateCollection):
         """Returns true if mother is hiv neg."""
         maternal_status_helper = maternal_status_helper or MaternalStatusHelper(
             visit)
-        return maternal_status_helper.hiv_status == NEG
+        return (maternal_status_helper.hiv_status == NEG
+                and visit.visit_code == '1010M'
+                and visit.visit_code_sequence == 0)
 
     def func_show_elisa_requisition(self, visit=None,
                                     maternal_status_helper=None, **kwargs):
