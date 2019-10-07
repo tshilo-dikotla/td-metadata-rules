@@ -201,13 +201,19 @@ class InfantPredicates(PredicateCollection):
         return self.is_karabo_eligible(visit)
 
     def func_show_karabo_wb_pbmc_pl_panel(self, visit, **kwargs):
-        return self.is_karabo_eligible(visit=visit) and visit.visit_code == '2060'
+        return (self.is_karabo_eligible(visit=visit)
+                and visit.visit_code == '2060'
+                and visit.visit_code_sequence == 0)
 
     def func_show_infant_paxgene_panel(self, visit, **kwargs):
-        return self.is_karabo_eligible(visit) and visit.visit_code == '2010'
+        return (self.is_karabo_eligible(visit)
+                and visit.visit_code == '2010'
+                and visit.visit_code_sequence == 0)
 
     def func_show_karabo_pbmc_pl_panel(self, visit, **kwargs):
-        return self.is_karabo_eligible(visit) and visit.visit_code in ['2120', '2180']
+        return (self.is_karabo_eligible(visit)
+                and visit.visit_code in ['2120', '2180']
+                and visit.visit_code_sequence == 0)
 
     def check_karabo_offstudy(self, visit):
         try:
