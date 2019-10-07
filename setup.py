@@ -13,7 +13,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='td-metadata-rules',
-    version='0.1.2',
+    version='0.1.3',
     author=u'imosweu',
     author_email='',
     packages=find_packages(),
