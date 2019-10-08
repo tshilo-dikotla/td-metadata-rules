@@ -95,6 +95,7 @@ class InfantPredicates(PredicateCollection):
 
         visit_list = ['2010', '2020', '2060', '2120']
         return (visit.visit_code in visit_list
+                and visit.visit_code_sequence == 0
                 and self.get_latest_maternal_hiv_status(
                     visit, maternal_status_helper))
 
