@@ -147,3 +147,10 @@ class MaternalPredicates(PredicateCollection):
                     report_datetime=previous_maternal_contr.report_datetime,
                     field_name='srh_referral')
                 return (values[0] == YES)
+
+    def func_show_cliniciannotes_form(self, visit=None, **kwargs):
+        """Return true if clinician notes object exists."""
+        return Reference.objects.filter(
+            model=f'{self.app_label}.cliniciannotes',
+            identifier=visit.subject_identifier,
+            report_datetime=visit.report_datetime).exists()
