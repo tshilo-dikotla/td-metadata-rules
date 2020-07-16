@@ -84,7 +84,7 @@ class TestMaternalPredicates(SiteTestCaseMixin, TestCase):
         maternal_status_helper = MaternalStatusHelper(status=NEG)
 
         self.assertTrue(
-            pc.func_mother_neg(self.maternal_visits[0],
+            pc.func_mother_neg(self.maternal_visits[1],
                                maternal_status_helper))
 
     def test_func_mother_pos_vl_required(self):
