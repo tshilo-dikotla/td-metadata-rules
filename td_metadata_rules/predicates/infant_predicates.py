@@ -61,7 +61,7 @@ class InfantPredicates(PredicateCollection):
     def func_show_infant_arv_proph(self, visit=None, maternal_status_helper=None, **kwargs):
         visit_list = ['2010', '2020']
         # check visit code
-        if visit.visit_code in visit_list:
+        if (visit.visit_code in visit_list and visit.visit_code_sequence == 0):
             infant_arv_proph_required = Reference.objects.filter(
                 model=f'{self.app_label}.infantarvproph',
                 identifier=visit.appointment.subject_identifier,
@@ -102,12 +102,14 @@ class InfantPredicates(PredicateCollection):
     def func_require_infant_elisa(self, visit=None,
                                   maternal_status_helper=None, **kwargs):
         return (visit.visit_code == '2180'
+                and visit.visit_code_sequence == 0
                 and self.get_latest_maternal_hiv_status(
                     visit, maternal_status_helper))
 
     def func_require_infant_dbs(self, visit=None,
                                 maternal_status_helper=None, **kwargs):
         return (visit.visit_code == '2010'
+                and visit.visit_code_sequence == 0
                 and not self.get_latest_maternal_hiv_status(
                     visit, maternal_status_helper))
 
@@ -140,7 +142,7 @@ class InfantPredicates(PredicateCollection):
     def func_show_nvp_adjustment_2010(self, visit,
                                       maternal_status_helper=None, **kwargs):
 
-        if visit.visit_code == '2010':
+        if (visit.visit_code == '2010' and visit.visit_code_sequence == 0):
 
             previous_nvp_dispensing = Reference.objects.filter(
                 model=f'{self.app_label}.infantnvpdispensing',
