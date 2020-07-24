@@ -235,11 +235,3 @@ class InfantPredicates(PredicateCollection):
             return False
         else:
             return True
-
-    def func_show_cliniciannotes_form(self, visit=None, **kwargs):
-        """Return true if clinician notes object exists."""
-
-        return Reference.objects.filter(
-            model=f'{self.app_label}.infantcliniciannotes',
-            identifier=visit.appointment.subject_identifier,
-            report_datetime=visit.report_datetime).exists()
