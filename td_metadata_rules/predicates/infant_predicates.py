@@ -67,7 +67,7 @@ class InfantPredicates(PredicateCollection):
                 identifier=visit.appointment.subject_identifier,
                 report_datetime__lt=visit.report_datetime).order_by('-report_datetime').first()
 
-            if not infant_arv_proph_required and visit.visit_code == '2010':
+            if visit.visit_code == '2010':
                 return self.get_latest_maternal_hiv_status(visit,
                                                            maternal_status_helper)
             elif infant_arv_proph_required:
@@ -76,7 +76,7 @@ class InfantPredicates(PredicateCollection):
                 try:
                     infant_arv_proph_model = infant_arv_proph_cls.objects.get(
                         infant_visit__subject_identifier=visit.appointment.subject_identifier,
-                        report_datetime=infant_arv_proph_required.report_datetime)
+                        infant_visit__visit_code=infant_arv_proph_required.timepoint)
                 except infant_arv_proph_cls.DoesNotExist:
                     return False
                 else:
