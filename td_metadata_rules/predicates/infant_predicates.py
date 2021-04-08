@@ -78,7 +78,7 @@ class InfantPredicates(PredicateCollection):
                         infant_visit__subject_identifier=visit.appointment.subject_identifier,
                         infant_visit__visit_code=infant_arv_proph_required.timepoint)
                 except infant_arv_proph_cls.DoesNotExist:
-                    return False
+                    return True
                 else:
                     arv_proph_list = infant_arv_proph_model.infantarvprophmod_set.all()
                     for arv in arv_proph_list:
