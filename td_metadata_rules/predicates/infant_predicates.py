@@ -84,7 +84,7 @@ class InfantPredicates(PredicateCollection):
                     for arv in arv_proph_list:
                         if arv.dose_status == 'Permanently discontinued':
                             return False
-                    return True
+            return True
 
     def func_infant_heu(self, visit=None, maternal_status_helper=None, **kwargs):
         return self.get_latest_maternal_hiv_status(visit,
